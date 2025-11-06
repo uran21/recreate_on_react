@@ -1,0 +1,242 @@
+[00:00:01.046] Server  LOG      ✓ Ready in 715ms
+[00:00:03.261] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` DESC LIMIT ? OFFSET ?"
+[00:00:03.641] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:00:07.302] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndFocusHandler segmentPath={[...]}>
+        <InnerScrollAndFocusHandler segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="users/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/admin/users" tree={[...]} params={{}} cacheNode={{lazyData:null, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="admin/user...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function AdminUsersPage} serverProvidedParams={{...}}>
+                          <AdminUsersPage params={Promise} searchParams={Promise}>
+                            <main
++                             className="jsx-5ff13c50a7fcb8d4 container"
+-                             className="container"
+                            >
++                             <header
++                               style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}
++                               className="jsx-5ff13c50a7fcb8d4"
++                             >
+-                             <h1>
+                              ...
+                      ...
+                    ...
+          ...
+
+[00:00:07.302] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:00:07.550] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:07.550] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:00:07.551] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:00:07.551] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:07.551] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:00:07.552] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:00:15.091] Server  WARN    Error: Route "/api/admin/users/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:00:25.090] Server  WARN    Error: Route "/api/admin/users/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:00:44.150] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:44.251] Server  LOG     prisma:query "SELECT 1"
+[00:00:44.252] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`description`, `main`.`Product`.`priceCents`, `main`.`Product`.`discountPriceCents`, `main`.`Product`.`category`, `main`.`Product`.`image`, `main`.`Product`.`sizesJson`, `main`.`Product`.`additivesJson`, `main`.`Product`.`isAvailable`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE 1=1 ORDER BY `main`.`Product`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:44.252] Server  LOG     prisma:query "SELECT `main`.`ProductSize`.`productId`, `main`.`ProductSize`.`key`, `main`.`ProductSize`.`label`, `main`.`ProductSize`.`priceCents`, `main`.`ProductSize`.`discountPriceCents` FROM `main`.`ProductSize` WHERE `main`.`ProductSize`.`productId` IN (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?"
+[00:00:44.252] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`description`, `main`.`Product`.`priceCents`, `main`.`Product`.`discountPriceCents`, `main`.`Product`.`category`, `main`.`Product`.`image`, `main`.`Product`.`sizesJson`, `main`.`Product`.`additivesJson`, `main`.`Product`.`isAvailable`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE 1=1 ORDER BY `main`.`Product`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:44.253] Server  LOG     prisma:query "SELECT `main`.`ProductSize`.`productId`, `main`.`ProductSize`.`key`, `main`.`ProductSize`.`label`, `main`.`ProductSize`.`priceCents`, `main`.`ProductSize`.`discountPriceCents` FROM `main`.`ProductSize` WHERE `main`.`ProductSize`.`productId` IN (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?"
+[00:00:48.737] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:48.738] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:00:48.738] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:00:48.752] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:48.752] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:00:48.753] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:00:56.550] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:00:56.550] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:00:56.551] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:01:00.348] Server  LOG     prisma:query "SELECT 1"
+[00:01:00.348] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` DESC LIMIT ? OFFSET ?"
+[00:01:00.621] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:02.923] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndFocusHandler segmentPath={[...]}>
+        <InnerScrollAndFocusHandler segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="orders/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/admin/orders" tree={[...]} params={{}} cacheNode={{lazyData:null, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="admin/orde...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function AdminOrdersPage} serverProvidedParams={{...}}>
+                          <AdminOrdersPage params={Promise} searchParams={Promise}>
+                            <main
++                             className="jsx-6f97d072c0b7c56 container admin-orders"
+-                             className="container"
+                            >
++                             <header
++                               style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}
++                               className="jsx-6f97d072c0b7c56"
++                             >
+-                             <h1>
+                              ...
+                      ...
+                    ...
+          ...
+
+[00:01:02.923] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:02.969] Server  LOG     prisma:query "SELECT `main`.`Order`.`id`, `main`.`Order`.`status`, `main`.`Order`.`totalCents`, `main`.`Order`.`createdAt`, `main`.`Order`.`customerId` FROM `main`.`Order` WHERE 1=1 ORDER BY `main`.`Order`.`createdAt` DESC LIMIT ? OFFSET ?"
+[00:01:02.969] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`cityId`, `main`.`User`.`streetId`, `main`.`User`.`houseNumber`, `main`.`User`.`paymentMethod` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.969] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.970] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.970] Server  LOG     prisma:query "SELECT `main`.`OrderItem`.`id`, `main`.`OrderItem`.`size`, `main`.`OrderItem`.`additivesJson`, `main`.`OrderItem`.`quantity`, `main`.`OrderItem`.`unitCents`, `main`.`OrderItem`.`productId`, `main`.`OrderItem`.`orderId` FROM `main`.`OrderItem` WHERE `main`.`OrderItem`.`orderId` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.970] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name` FROM `main`.`Product` WHERE `main`.`Product`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.970] Server  LOG     prisma:query "SELECT `main`.`Order`.`id`, `main`.`Order`.`status`, `main`.`Order`.`totalCents`, `main`.`Order`.`createdAt`, `main`.`Order`.`customerId` FROM `main`.`Order` WHERE 1=1 ORDER BY `main`.`Order`.`createdAt` DESC LIMIT ? OFFSET ?"
+[00:01:02.971] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`cityId`, `main`.`User`.`streetId`, `main`.`User`.`houseNumber`, `main`.`User`.`paymentMethod` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.971] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.971] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.972] Server  LOG     prisma:query "SELECT `main`.`OrderItem`.`id`, `main`.`OrderItem`.`size`, `main`.`OrderItem`.`additivesJson`, `main`.`OrderItem`.`quantity`, `main`.`OrderItem`.`unitCents`, `main`.`OrderItem`.`productId`, `main`.`OrderItem`.`orderId` FROM `main`.`OrderItem` WHERE `main`.`OrderItem`.`orderId` IN (?) LIMIT ? OFFSET ?"
+[00:01:02.972] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name` FROM `main`.`Product` WHERE `main`.`Product`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:01:04.904] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` DESC LIMIT ? OFFSET ?"
+[00:01:05.154] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:08.385] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name`, `main`.`Product`.`description`, `main`.`Product`.`priceCents`, `main`.`Product`.`discountPriceCents`, `main`.`Product`.`category`, `main`.`Product`.`image`, `main`.`Product`.`sizesJson`, `main`.`Product`.`additivesJson`, `main`.`Product`.`isAvailable`, `main`.`Product`.`createdAt`, `main`.`Product`.`updatedAt` FROM `main`.`Product` WHERE 1=1 ORDER BY `main`.`Product`.`id` ASC LIMIT ? OFFSET ?"
+[00:01:08.386] Server  LOG     prisma:query "SELECT `main`.`ProductSize`.`productId`, `main`.`ProductSize`.`key`, `main`.`ProductSize`.`label`, `main`.`ProductSize`.`priceCents`, `main`.`ProductSize`.`discountPriceCents` FROM `main`.`ProductSize` WHERE `main`.`ProductSize`.`productId` IN (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?"
+[00:01:08.472] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:09.749] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` DESC LIMIT ? OFFSET ?"
+[00:01:10.004] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:12.404] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:01:12.405] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:01:12.405] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:01:12.405] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:01:12.406] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:01:12.407] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:01:12.445] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndFocusHandler segmentPath={[...]}>
+        <InnerScrollAndFocusHandler segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="users/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/admin/users" tree={[...]} params={{}} cacheNode={{lazyData:null, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="admin/user...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function AdminUsersPage} serverProvidedParams={{...}}>
+                          <AdminUsersPage params={Promise} searchParams={Promise}>
+                            <main
++                             className="jsx-5ff13c50a7fcb8d4 container"
+-                             className="container"
+                            >
++                             <header
++                               style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}
++                               className="jsx-5ff13c50a7fcb8d4"
++                             >
+-                             <h1>
+                              ...
+                      ...
+                    ...
+          ...
+
+[00:01:12.445] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:50.777] Server  LOG     prisma:query "SELECT 1"
+[00:01:50.794] Server  LOG     prisma:query "INSERT INTO `main`.`User` (`login`, `passwordHash`, `paymentMethod`, `role`, `createdAt`) VALUES (?,?,?,?,?) RETURNING `id` AS `id`, `login` AS `login`, `passwordHash` AS `passwordHash`, `cityId` AS `cityId`, `streetId` AS `streetId`, `houseNumber` AS `houseNumber`, `paymentMethod` AS `paymentMethod`, `role` AS `role`, `createdAt` AS `createdAt`"
+[00:01:50.807] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:01:50.807] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:01:50.808] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:01:56.467] Server  WARN    Error: Route "/api/admin/users/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+[00:02:02.644] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt`, `main`.`User`.`paymentMethod`, `main`.`User`.`houseNumber`, `main`.`User`.`cityId`, `main`.`User`.`streetId` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` ASC LIMIT ? OFFSET ?"
+[00:02:02.644] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?,?) LIMIT ? OFFSET ?"
+[00:02:02.644] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?,?,?) LIMIT ? OFFSET ?"
+[00:02:55.914] Server  LOG     prisma:query "SELECT 1"
+[00:02:55.914] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`role`, `main`.`User`.`createdAt` FROM `main`.`User` WHERE 1=1 ORDER BY `main`.`User`.`id` DESC LIMIT ? OFFSET ?"
+[00:02:56.200] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:02:57.853] Server  LOG     prisma:query "SELECT `main`.`Order`.`id`, `main`.`Order`.`status`, `main`.`Order`.`totalCents`, `main`.`Order`.`createdAt`, `main`.`Order`.`customerId` FROM `main`.`Order` WHERE 1=1 ORDER BY `main`.`Order`.`createdAt` DESC LIMIT ? OFFSET ?"
+[00:02:57.853] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`cityId`, `main`.`User`.`streetId`, `main`.`User`.`houseNumber`, `main`.`User`.`paymentMethod` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.853] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.853] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.854] Server  LOG     prisma:query "SELECT `main`.`OrderItem`.`id`, `main`.`OrderItem`.`size`, `main`.`OrderItem`.`additivesJson`, `main`.`OrderItem`.`quantity`, `main`.`OrderItem`.`unitCents`, `main`.`OrderItem`.`productId`, `main`.`OrderItem`.`orderId` FROM `main`.`OrderItem` WHERE `main`.`OrderItem`.`orderId` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.854] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name` FROM `main`.`Product` WHERE `main`.`Product`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.854] Server  LOG     prisma:query "SELECT `main`.`Order`.`id`, `main`.`Order`.`status`, `main`.`Order`.`totalCents`, `main`.`Order`.`createdAt`, `main`.`Order`.`customerId` FROM `main`.`Order` WHERE 1=1 ORDER BY `main`.`Order`.`createdAt` DESC LIMIT ? OFFSET ?"
+[00:02:57.854] Server  LOG     prisma:query "SELECT `main`.`User`.`id`, `main`.`User`.`login`, `main`.`User`.`cityId`, `main`.`User`.`streetId`, `main`.`User`.`houseNumber`, `main`.`User`.`paymentMethod` FROM `main`.`User` WHERE `main`.`User`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.855] Server  LOG     prisma:query "SELECT `main`.`City`.`id`, `main`.`City`.`name` FROM `main`.`City` WHERE `main`.`City`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.855] Server  LOG     prisma:query "SELECT `main`.`Street`.`id`, `main`.`Street`.`name` FROM `main`.`Street` WHERE `main`.`Street`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.855] Server  LOG     prisma:query "SELECT `main`.`OrderItem`.`id`, `main`.`OrderItem`.`size`, `main`.`OrderItem`.`additivesJson`, `main`.`OrderItem`.`quantity`, `main`.`OrderItem`.`unitCents`, `main`.`OrderItem`.`productId`, `main`.`OrderItem`.`orderId` FROM `main`.`OrderItem` WHERE `main`.`OrderItem`.`orderId` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.855] Server  LOG     prisma:query "SELECT `main`.`Product`.`id`, `main`.`Product`.`name` FROM `main`.`Product` WHERE `main`.`Product`.`id` IN (?) LIMIT ? OFFSET ?"
+[00:02:57.896] Browser ERROR   uncaughtError: Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <RenderFromTemplateContext>
+      <ScrollAndFocusHandler segmentPath={[...]}>
+        <InnerScrollAndFocusHandler segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+          <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+            <LoadingBoundary name="orders/" loading={null}>
+              <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                <RedirectBoundary>
+                  <RedirectErrorBoundary router={{...}}>
+                    <InnerLayoutRouter url="/admin/orders" tree={[...]} params={{}} cacheNode={{lazyData:null, ...}} ...>
+                      <SegmentViewNode type="page" pagePath="admin/orde...">
+                        <SegmentTrieNode>
+                        <ClientPageRoot Component={function AdminOrdersPage} serverProvidedParams={{...}}>
+                          <AdminOrdersPage params={Promise} searchParams={Promise}>
+                            <main
++                             className="jsx-6f97d072c0b7c56 container admin-orders"
+-                             className="container"
+                            >
++                             <header
++                               style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}
++                               className="jsx-6f97d072c0b7c56"
++                             >
+-                             <h1>
+                              ...
+                      ...
+                    ...
+          ...
+
+[00:02:57.896] Browser WARN    Image with src "http://localhost:3000/assets/logo.svg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.

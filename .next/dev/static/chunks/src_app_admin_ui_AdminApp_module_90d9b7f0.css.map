@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/admin/Desktop/recreate_coffee/src/app/admin/ui/AdminApp.module.css"],"sourcesContent":["/* src/app/admin/ui/AdminApp.module.css */\r\n.wrap { display: grid; gap: 16px; padding: 16px; }\r\n.topbar { display: flex; align-items: center; justify-content: space-between; }\r\n.nav { display: flex; gap: 12px; }\r\n.card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; background: #fff; }\r\n.table { width: 100%; border-collapse: collapse; }\r\n.table th, .table td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; }\r\n"],"names":[],"mappings":"AACA;;;;;;AACA;;;;;;AACA;;;;;AACA;;;;;;;AACA;;;;;AACA","debugId":null}}]
+}

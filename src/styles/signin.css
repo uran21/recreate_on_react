@@ -1,0 +1,52 @@
+.auth {
+  max-width: 680px;
+  margin: 32px auto 80px;
+}
+.auth h1 {
+  font-size: 48px;
+  margin: 24px 0;
+}
+.field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.label {
+  font-size: 12px;
+  opacity: 0.8;
+}
+.input {
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #fff7f0;
+  border-radius: 12px;
+}
+.btn-signin {
+  padding: 10px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background: transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.err {
+  color: #b00020;
+  font-size: 12px;
+  min-height: 14px;
+}
+.toast {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.toast--ok {
+  color: #1b6b2a;
+}
+.toast--err {
+  color: #b00020;
+}
+.note {
+  font-size: 13px;
+  opacity: 0.8;
+  text-align: center;
+  margin-top: 8px;
+}

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/styles/main.css"],"sourcesContent":["@import \"./tokens.css\";\r\n@import \"./fonts.css\";\r\n@import \"./base.css\";\r\n@import \"./header.css\";\r\n@import \"./hero.css\";\r\n@import \"./burger.css\";\r\n@import \"./favorite.css\";\r\n@import \"./about.css\";\r\n@import \"./apps.css\";\r\n@import \"./cta.css\";\r\n@import \"./cart.css\";\r\n@import \"./register.css\";\r\n@import \"./signin.css\";\r\n\r\nhtml {\r\n  scroll-behavior: smooth;\r\n}\r\n\r\n.section,\r\n.favorite,\r\n.about,\r\n.apps,\r\n.promo,\r\n.site-footer {\r\n  scroll-margin-top: 80px;\r\n}\r\n\r\n@media (max-width: 768px) {\r\n  .section,\r\n  .favorite,\r\n  .about,\r\n  .apps,\r\n  .promo,\r\n  .site-footer {\r\n    scroll-margin-top: 64px;\r\n  }\r\n}\r\n"],"names":[],"mappings":"AAcA;;;;AAIA;;;;AASA;EACE"}}]
+}

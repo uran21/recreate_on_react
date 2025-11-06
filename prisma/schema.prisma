@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model City {
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
+  streets Street[]
+  users   User[]   @relation("UserCity")
+}
+
+model Street {
+  id     Int    @id @default(autoincrement())
+  name   String
+  cityId Int
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  users  User[] @relation("UserStreet")
+
+  @@unique([name, cityId])
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  login        String   @unique
+  passwordHash String
+
+  cityId       Int?     // 🔹 было Int → Int?
+  streetId     Int?     // 🔹 было Int → Int?
+  city         City?    @relation("UserCity", fields: [cityId], references: [id])
+  street       Street?  @relation("UserStreet", fields: [streetId], references: [id])
+
+  houseNumber   Int?        // 🔹 было Int → Int?
+  paymentMethod String?     @default("card")
+  role          String      @default("user")
+  createdAt     DateTime    @default(now())
+
+  orders Order[]
+}
+
+model Product {
+  id                 Int               @id @default(autoincrement())
+  name               String
+  description        String?
+  priceCents         Int
+  discountPriceCents Int?
+  category           String
+  image              String?
+  sizesJson          String?
+  additivesJson      String?
+  isAvailable        Boolean           @default(true)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  productSizes       ProductSize[]
+  productAdditives   ProductAdditive[]
+  OrderItem          OrderItem[]
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  customerId Int
+  customer   User        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  status     String      @default("NEW")
+  totalCents Int
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  items      OrderItem[]
+}
+
+model OrderItem {
+  id            Int     @id @default(autoincrement())
+  orderId       Int
+  productId     Int
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  size          String
+  additivesJson String
+  quantity      Int
+  unitCents     Int
+}
+
+model ProductSize {
+  productId          Int
+  key                String
+  label              String?
+  priceCents         Int
+  discountPriceCents Int?
+  product            Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([productId, key])
+}
+
+model Additive {
+  id                 Int               @id @default(autoincrement())
+  name               String            @unique
+  priceCents         Int
+  discountPriceCents Int?
+  productAdditives   ProductAdditive[]
+}
+
+model ProductAdditive {
+  productId  Int
+  additiveId Int
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  additive   Additive @relation(fields: [additiveId], references: [id], onDelete: Cascade)
+
+  @@id([productId, additiveId])
+}

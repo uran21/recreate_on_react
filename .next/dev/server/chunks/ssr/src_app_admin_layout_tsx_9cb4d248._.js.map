@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/admin/Desktop/recreate_coffee/src/app/admin/layout.tsx"],"sourcesContent":["// src/app/admin/layout.tsx\r\nimport type { ReactNode } from \"react\";\r\n\r\nexport default function AdminLayout({ children }: { children: ReactNode }) {\r\n  return (\r\n    <section>\r\n      {children}\r\n    </section>\r\n  );\r\n}\r\n"],"names":[],"mappings":"AAAA,2BAA2B;;;;;;;AAGZ,SAAS,YAAY,EAAE,QAAQ,EAA2B;IACvE,qBACE,6WAAC;kBACE;;;;;;AAGP","debugId":null}}]
+}

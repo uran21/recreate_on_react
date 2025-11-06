@@ -1,0 +1,148 @@
+/* [project]/src/styles/apps.css [app-client] (css) */
+.apps {
+  padding-block: 40px;
+}
+
+.apps__grid {
+  background: var(--bg);
+  grid-template-columns: 1.05fr 1fr;
+  grid-template-areas: "copy media";
+  align-items: center;
+  gap: clamp(24px, 4vw, 48px);
+  min-height: clamp(520px, 45vw, 630px);
+  padding: 40px;
+  display: grid;
+}
+
+.apps__copy {
+  grid-area: copy;
+}
+
+.apps__media {
+  grid-area: media;
+}
+
+.apps__media img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.apps__title {
+  color: var(--text);
+  margin: 0 0 16px;
+  font-size: clamp(32px, 4.2vw, 56px);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.apps__accent {
+  color: var(--muted);
+  font-style: italic;
+  font-weight: 600;
+}
+
+.apps__sub {
+  color: #403f3dd9;
+  max-width: 48ch;
+  margin: 0 0 24px;
+  font-weight: 600;
+}
+
+.apps__stores {
+  flex-wrap: wrap;
+  gap: 12px;
+  display: flex;
+}
+
+.store-link {
+  width: 180px;
+  height: 54px;
+  line-height: 0;
+  display: inline-block;
+  position: relative;
+}
+
+.store-link .icon {
+  pointer-events: none;
+  will-change: opacity;
+  width: 100%;
+  height: 100%;
+  transition: opacity 2s cubic-bezier(.2, .6, .2, 1);
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.store-link .icon--hover, .store-link:hover .icon--default, .store-link:focus-visible .icon--default {
+  opacity: 0;
+}
+
+.store-link:hover .icon--hover, .store-link:focus-visible .icon--hover {
+  opacity: 1;
+}
+
+.apps__media {
+  min-height: 420px;
+  position: relative;
+}
+
+.phone {
+  filter: drop-shadow(0 12px 24px #0003);
+  width: 630px;
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .store-link .icon {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .apps__grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: "copy"
+                         "media";
+    justify-items: center;
+  }
+
+  .apps .apps__copy {
+    text-align: center;
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  .apps .apps__title, .apps .apps__sub {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .apps__grid {
+    justify-items: center;
+    gap: 20px;
+    padding: 20px 16px;
+  }
+
+  .apps .apps__copy {
+    text-align: center;
+    max-width: 48ch;
+    margin-inline: auto;
+  }
+
+  .apps .apps__title {
+    max-width: 18ch;
+  }
+
+  .apps__sub {
+    text-align: justify;
+  }
+
+  .apps__stores {
+    justify-content: center;
+  }
+}
+
+/*# sourceMappingURL=src_styles_apps_css_bad6b30c._.single.css.map*/

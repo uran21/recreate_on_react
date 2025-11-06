@@ -1,0 +1,16 @@
+/* [project]/src/styles/main.css [app-client] (css) */
+html {
+  scroll-behavior: smooth;
+}
+
+.section, .favorite, .about, .apps, .promo, .site-footer {
+  scroll-margin-top: 80px;
+}
+
+@media (max-width: 768px) {
+  .section, .favorite, .about, .apps, .promo, .site-footer {
+    scroll-margin-top: 64px;
+  }
+}
+
+/*# sourceMappingURL=src_styles_main_css_bad6b30c._.single.css.map*/

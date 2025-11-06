@@ -1,0 +1,7 @@
+/* src/app/admin/ui/AdminApp.module.css */
+.wrap { display: grid; gap: 16px; padding: 16px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 12px; }
+.card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; background: #fff; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; }

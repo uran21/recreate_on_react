@@ -1,0 +1,39 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.page {
+  display: grid;
+  row-gap: 100px;
+  padding-block: 20px 40px;
+  padding-inline: clamp(var(--page-pad-min), 5vw, var(--page-pad-desktop));
+}
+
+.section {
+  margin: 0;
+}
+
+.container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: 0;
+}

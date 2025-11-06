@@ -1,0 +1,14 @@
+:root{
+   --bg:#E1D4C9;
+  --text:#403F3D;
+  --muted:#B0907A;
+  
+  --container:1360px;
+  --page-pad-min:16px;
+  --page-pad-desktop:40px;
+
+   --cup-dur:.28s;
+  --cup-delay:.06s;
+  --cup-ease:linear;
+  
+}
