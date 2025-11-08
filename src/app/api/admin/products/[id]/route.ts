@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { verifyJwt } from "@/server/jwt";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
@@ -7,7 +7,9 @@ export const runtime = "nodejs";
 export const maxDuration = 30;
 
 type Params = { params: { id: string } };
-
+function forbid(msg = "Forbidden") {
+  return NextResponse.json({ error: msg }, { status: 403 });
+}
 export async function DELETE(req: Request, { params }: Params) {
   const token = (req.headers.get("authorization") || "").replace(
     /^Bearer\s+/i,
