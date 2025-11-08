@@ -98,17 +98,17 @@ __turbopack_context__.s([
     "verifyJwt",
     ()=>verifyJwt
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$jsonwebtoken$40$9$2e$0$2e$2$2f$node_modules$2f$jsonwebtoken$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/jsonwebtoken@9.0.2/node_modules/jsonwebtoken/index.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jsonwebtoken$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/jsonwebtoken/index.js [app-route] (ecmascript)");
 ;
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_fallback";
 function signJwt(payload, days = 7) {
-    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$jsonwebtoken$40$9$2e$0$2e$2$2f$node_modules$2f$jsonwebtoken$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].sign(payload, JWT_SECRET, {
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jsonwebtoken$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].sign(payload, JWT_SECRET, {
         expiresIn: `${days}d`
     });
 }
 function verifyJwt(token) {
     try {
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$jsonwebtoken$40$9$2e$0$2e$2$2f$node_modules$2f$jsonwebtoken$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].verify(token, JWT_SECRET);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$jsonwebtoken$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].verify(token, JWT_SECRET);
     } catch  {
         return null;
     }
@@ -154,34 +154,59 @@ function requireUser(req) {
 "[project]/src/app/api/admin/orders/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-// src/app/api/admin/orders/route.ts
 __turbopack_context__.s([
     "GET",
     ()=>GET,
     "runtime",
     ()=>runtime
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/next@16.0.1_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/server.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/prisma.ts [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2d$server$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/auth-server.ts [app-route] (ecmascript)");
 ;
 ;
 ;
 const runtime = "nodejs";
+function startOfDayUTC(d) {
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0));
+}
+function dayKeyUTC(d) {
+    // YYYY-MM-DD по UTC (удобно и стабильно для сервера)
+    return d.toISOString().slice(0, 10);
+}
 async function GET(req) {
     try {
         const user = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2d$server$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["requireUser"])(req);
         if ((user.role || "").toLowerCase() !== "admin") {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: "Forbidden"
             }, {
                 status: 403
             });
         }
-        const orders = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].order.findMany({
+        const url = new URL(req.url);
+        const days = Math.max(1, Math.min(10, Number(url.searchParams.get("days")) || 3)); // 1..10
+        const cursorRaw = url.searchParams.get("cursor"); // ISO-строка или null
+        const cursor = cursorRaw ? new Date(cursorRaw) : new Date();
+        if (isNaN(cursor.getTime())) {
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                error: "Invalid cursor"
+            }, {
+                status: 400
+            });
+        }
+        // Берём достаточно заказов "в запас" (например, 800), чтобы точно набрать 3 дня
+        // При необходимости увеличь/уменьши take под свои объёмы.
+        const chunk = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].order.findMany({
+            where: {
+                createdAt: {
+                    lt: cursor
+                }
+            },
             orderBy: {
                 createdAt: "desc"
             },
+            take: 800,
             select: {
                 id: true,
                 status: true,
@@ -222,35 +247,78 @@ async function GET(req) {
                 }
             }
         });
-        // Нормализуем адрес
-        const norm = orders.map((o)=>({
+        const buckets = {};
+        const dayOrder = [];
+        for (const o of chunk){
+            const k = dayKeyUTC(o.createdAt);
+            if (!buckets[k]) {
+                if (dayOrder.length >= days) break; // уже набрали нужное кол-во дат
+                buckets[k] = {
+                    dayIso: k,
+                    totalCents: 0,
+                    orders: []
+                };
+                dayOrder.push(k);
+            }
+            buckets[k].orders.push({
                 ...o,
                 customer: o.customer && {
                     id: o.customer.id,
                     login: o.customer.login,
-                    city: o.customer.city?.name,
-                    street: o.customer.street?.name,
-                    houseNumber: o.customer.houseNumber,
-                    paymentMethod: o.customer.paymentMethod
+                    city: o.customer.city?.name ?? null,
+                    street: o.customer.street?.name ?? null,
+                    houseNumber: o.customer.houseNumber ?? null,
+                    paymentMethod: o.customer.paymentMethod ?? null
                 }
-            }));
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            });
+            buckets[k].totalCents += o.totalCents;
+        }
+        const daysOut = dayOrder.map((k)=>buckets[k]);
+        // Сформируем nextBefore: это 00:00 UTC дня, который идёт ПЕРЕД самым старым из выданных
+        let nextBefore = null;
+        let hasMore = false;
+        if (dayOrder.length > 0) {
+            const oldestDayIso = dayOrder[dayOrder.length - 1]; // последний в списке — самый старый день
+            const [y, m, d] = oldestDayIso.split("-").map(Number);
+            const oldestDayStart = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+            // следующий курсор — начало суток ещё на день раньше
+            const prevDayStart = new Date(oldestDayStart.getTime() - 24 * 60 * 60 * 1000);
+            nextBefore = prevDayStart.toISOString();
+            // Проверяем, есть ли ещё заказы раньше prevDayStart
+            const more = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].order.findFirst({
+                where: {
+                    createdAt: {
+                        lt: prevDayStart
+                    }
+                },
+                select: {
+                    id: true
+                },
+                orderBy: {
+                    createdAt: "desc"
+                }
+            });
+            hasMore = !!more;
+        }
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             data: {
-                orders: norm
+                days: daysOut,
+                nextBefore,
+                hasMore
             },
             message: "OK",
             error: null
         });
     } catch (e) {
         if (e instanceof __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$auth$2d$server$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["AuthError"]) {
-            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
                 error: e.message
             }, {
                 status: e.status
             });
         }
         console.error("GET /api/admin/orders error:", e);
-        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             error: "Failed to load orders"
         }, {
             status: 500

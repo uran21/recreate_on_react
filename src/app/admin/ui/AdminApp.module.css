@@ -1,7 +1,126 @@
-/* src/app/admin/ui/AdminApp.module.css */
-.wrap { display: grid; gap: 16px; padding: 16px; }
-.topbar { display: flex; align-items: center; justify-content: space-between; }
-.nav { display: flex; gap: 12px; }
-.card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; background: #fff; }
-.table { width: 100%; border-collapse: collapse; }
-.table th, .table td { padding: 8px 10px; border-bottom: 1px solid #eee; text-align: left; }
+/* Карточки-блоки */
+.card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* Красивые таблицы */
+.tableNice {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.tableNice thead th {
+    position: sticky;
+    top: 0;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 12px;
+    z-index: 1;
+}
+
+.tableNice tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f2f2f2;
+    vertical-align: top;
+}
+
+.tableNice tbody tr:nth-child(odd) {
+    background: #fcfcfc;
+}
+
+.tableNice tbody tr:hover {
+    background: #f6faff;
+}
+
+/* Узкие колоноки-числа вправо */
+.thRight,
+.tdRight {
+    text-align: right;
+}
+
+.tdCenter {
+    text-align: center;
+}
+
+/* Обрезка длинных названий товара */
+.nameCell {
+    max-width: 280px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Небольшие таблицы — компактнее */
+.tableCompact thead th,
+.tableCompact tbody td {
+    padding: 8px 10px;
+}
+
+/* Заголовок секции дня */
+.dayHeader {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 8px 0;
+}
+
+.dayHeaderTotal {
+    font-weight: 600;
+    opacity: .8;
+}
+
+/* Бейджи статусов в едином стиле */
+.badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.badge_new {
+    background: #f2f7ff;
+    border-color: #9ec5ff;
+}
+
+.badge_paid {
+    background: #eefcf3;
+    border-color: #98e6b5;
+}
+
+.badge_in_progress {
+    background: #fff7e6;
+    border-color: #ffd27a;
+}
+
+.badge_done {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.badge_canceled {
+    background: #fff1f2;
+    border-color: #fecdd3;
+}
+
+/* Табличный футер (итог) */
+.tfoot td {
+    background: #fafafa;
+    font-weight: 600;
+}
+
+.container {
+    padding: 24px;
+}

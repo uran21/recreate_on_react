@@ -54,7 +54,7 @@ export default function Header() {
 
       <div className="container header-row">
         <Link className="logo" href="/" aria-label="Coffee House">
-          <Image src="/assets/logo.svg" alt="Coffee House" width={120} height={48} />
+          <Image src="/assets/logo.svg" alt="Logo" width={120} height={40} />
         </Link>
 
         <nav
@@ -68,17 +68,39 @@ export default function Header() {
             aria-label="Coffee House"
             onClick={close}
           >
-            <Image src="/assets/logo.svg" alt="Coffee House" width={120} height={80} />
+            <Image
+              src="/assets/logo.svg"
+              alt="Coffee House"
+              width={120}
+              height={80}
+            />
           </Link>
 
-          <a className="nav-link" href="/#favorites" onClick={close}>Favorite coffee</a>
-          <a className="nav-link" href="/#about" onClick={close}>About</a>
-          <a className="nav-link" href="/#app" onClick={close}>Mobile app</a>
-          <a className="nav-link" href="/#footer" onClick={close}>Contact us</a>
+          <a className="nav-link" href="/#favorites" onClick={close}>
+            Favorite coffee
+          </a>
+          <a className="nav-link" href="/#about" onClick={close}>
+            About
+          </a>
+          <a className="nav-link" href="/#app" onClick={close}>
+            Mobile app
+          </a>
+          <a className="nav-link" href="/#footer" onClick={close}>
+            Contact us
+          </a>
 
-          <Link className="nav-link nav-link--menu" href="/menu" onClick={close}>
+          <Link
+            className="nav-link nav-link--menu"
+            href="/menu"
+            onClick={close}
+          >
             <span>Menu</span>
-            <img className="cup" src="/assets/coffee-cup.svg" alt="" aria-hidden="true" />
+            <img
+              className="cup"
+              src="/assets/coffee-cup.svg"
+              alt=""
+              aria-hidden="true"
+            />
           </Link>
 
           {/* Cart в мобильном меню */}
@@ -91,7 +113,12 @@ export default function Header() {
 
           <Link className="menu-link" href="/menu">
             <span className="menu-text">Menu</span>
-            <img className="cup" src="/assets/coffee-cup.svg" alt="" aria-hidden="true" />
+            <img
+              className="cup"
+              src="/assets/coffee-cup.svg"
+              alt=""
+              aria-hidden="true"
+            />
           </Link>
         </div>
 

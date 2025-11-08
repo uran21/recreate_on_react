@@ -73,7 +73,7 @@ __turbopack_context__.s([
     "GET",
     ()=>GET
 ]);
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/.pnpm/next@16.0.1_react-dom@19.2.0_react@19.2.0__react@19.2.0/node_modules/next/server.js [app-route] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/prisma.ts [app-route] (ecmascript)");
 ;
 ;
@@ -88,29 +88,30 @@ async function GET() {
     });
     const data = items.map((p)=>{
         const sizes = p.productSizes || [];
-        // стратегия дефолта: сначала ищем 's', если нет — берём самый дешёвый
+        // try to find size “s” (small)
         const byS = sizes.find((s)=>s.key === "s");
+        // find the cheapest size if no “s” exists
         const cheapest = sizes.length > 0 ? sizes.reduce((min, s)=>s.priceCents < min.priceCents ? s : min, sizes[0]) : null;
-        const def = byS || cheapest;
+        // define the default size: prefer “s”, otherwise the cheapest
+        const def = byS || cheapest || null;
         return {
             id: p.id,
             name: p.name,
-            description: p.description,
+            description: p.description ?? null,
             category: p.category,
-            image: p.image,
+            image: p.image ?? null,
             sizes: sizes.map((s)=>({
                     key: s.key,
-                    label: s.label,
+                    label: s.label ?? null,
                     priceCents: s.priceCents,
                     discountPriceCents: s.discountPriceCents ?? null
                 })),
-            // ВЫРАВНИВАЕМ list-цену с модалкой:
             defaultSizeKey: def?.key ?? null,
             priceCents: def?.priceCents ?? p.priceCents,
             discountPriceCents: def?.discountPriceCents ?? p.discountPriceCents ?? null
         };
     });
-    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f2e$pnpm$2f$next$40$16$2e$0$2e$1_react$2d$dom$40$19$2e$2$2e$0_react$40$19$2e$2$2e$0_$5f$react$40$19$2e$2$2e$0$2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+    return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
         data
     });
 }

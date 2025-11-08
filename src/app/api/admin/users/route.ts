@@ -1,72 +1,117 @@
+// src/app/api/admin/users/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJwt } from "@/server/jwt";
 import bcrypt from "bcryptjs";
 
-function unauthorized() {
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+function forbid(msg = "Forbidden") {
+  return NextResponse.json({ error: msg }, { status: 403 });
 }
-function forbidden() {
-  return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+function bad(msg = "Bad request", code = 400) {
+  return NextResponse.json({ error: msg }, { status: code });
 }
+
+// DTO наружу
+type UserDTO = {
+  id: number;
+  login: string;
+  role: string;
+  city: string | null;
+  street: string | null;
+  houseNumber: number | null;
+  paymentMethod: string | null;
+  createdAt: string | null;
+};
 
 export async function GET(req: Request) {
-  const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i,"");
-  const user = verifyJwt(token);
-  if (!user) return unauthorized();
-  if ((user.role||"").toLowerCase()!=="admin") return forbidden();
+  const auth = req.headers.get("authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const payload = token ? (verifyJwt(token) as { role?: string } | null) : null;
+  if (!payload || (payload.role || "").toLowerCase() !== "admin") {
+    return forbid();
+  }
 
   const users = await prisma.user.findMany({
-    orderBy: { id: "asc" },
-    select: {
-      id:true, login:true, role:true, createdAt:true,
-      paymentMethod:true, houseNumber:true,
-      city: { select: { name:true } },
-      street: { select: { name:true } },
-    }
+    orderBy: { id: "desc" },
+    include: { city: true, street: true },
   });
 
+  type UserWithRefs = typeof users[number]; // ← тип одного элемента массива
+
+  const out: UserDTO[] = users.map((u: UserWithRefs) => ({
+    id: u.id,
+    login: u.login,
+    role: u.role,
+    city: u.city?.name ?? null,
+    street: u.street?.name ?? null,
+    houseNumber: u.houseNumber ?? null,
+    paymentMethod: u.paymentMethod ?? null,
+    createdAt: u.createdAt?.toISOString?.() ?? null,
+  }));
+
   return NextResponse.json({
-    data: {
-      users: users.map(u=>({
-        id: u.id,
-        login: u.login,
-        role: u.role,
-        city: u.city?.name || null,
-        street: u.street?.name || null,
-        houseNumber: u.houseNumber ?? null,
-        paymentMethod: u.paymentMethod ?? null,
-        createdAt: u.createdAt.toISOString(),
-      }))
-    }, message:"OK", error:null
+    data: { users: out },
+    message: "OK",
+    error: null,
   });
 }
 
 export async function POST(req: Request) {
-  const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i,"");
-  const user = verifyJwt(token);
-  if (!user) return unauthorized();
-  if ((user.role||"").toLowerCase()!=="admin") return forbidden();
-
-  const body = await req.json().catch(()=> ({}));
-  const { login, password, role="user", paymentMethod = "card" } = body || {};
-  if (!/^[A-Za-z][A-Za-z0-9]{2,}$/.test(login||"")) {
-    return NextResponse.json({ error:"Invalid login" }, { status:400 });
-  }
-  if (!(typeof password==="string" && /^(?=.*[^\w\s]).{6,}$/.test(password))) {
-    return NextResponse.json({ error:"Weak password" }, { status:400 });
+  const auth = req.headers.get("authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  const payload = token ? (verifyJwt(token) as { role?: string } | null) : null;
+  if (!payload || (payload.role || "").toLowerCase() !== "admin") {
+    return forbid();
   }
 
-  const hash = await bcrypt.hash(password, 10);
+  const body = await req.json().catch(() => ({} as Record<string, unknown>));
+  const { login, password, role = "user", paymentMethod = "card" } = body as {
+    login: string;
+    password: string;
+    role?: string;
+    paymentMethod?: string;
+  };
+
+  const reLogin = /^[A-Za-z][A-Za-z0-9]{2,}$/;
+  const rePassword = /^(?=.*[^\w\s]).{6,}$/;
+  if (!reLogin.test(String(login || ""))) return bad("Invalid login");
+  if (!rePassword.test(String(password || ""))) return bad("Invalid password");
+
   try {
+    const hash = await bcrypt.hash(password, 10);
     const created = await prisma.user.create({
-      data: { login, passwordHash: hash, role, paymentMethod }
+      data: {
+        login: String(login),
+        passwordHash: hash,
+        role: String(role || "user"),
+        paymentMethod: String(paymentMethod || "card"),
+      },
+      include: { city: true, street: true },
     });
-    return NextResponse.json({ data: { id: created.id }, message:"Created", error:null }, { status:201 });
-  } catch (e:any) {
-    if (String(e?.message||"").includes("Unique")) {
-      return NextResponse.json({ error:"Login already exists" }, { status:409 });
+
+    const user: UserDTO = {
+      id: created.id,
+      login: created.login,
+      role: created.role,
+      city: created.city?.name ?? null,
+      street: created.street?.name ?? null,
+      houseNumber: created.houseNumber ?? null,
+      paymentMethod: created.paymentMethod ?? null,
+      createdAt: created.createdAt?.toISOString?.() ?? null,
+    };
+
+    return NextResponse.json(
+      { data: { user }, message: "Created", error: null },
+      { status: 201 }
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (/unique/i.test(msg)) {
+      return NextResponse.json(
+        { error: "Login already exists" },
+        { status: 409 }
+      );
     }
-    return NextResponse.json({ error:"Failed to create" }, { status:500 });
+    return NextResponse.json({ error: "Failed to create" }, { status: 500 });
   }
 }

@@ -27,6 +27,7 @@ type UserProfile = {
 const money = (n: number) => `$${(n || 0).toFixed(2)}`;
 const isAuthed = () => !!localStorage.getItem("authToken");
 
+/* ===== helpers ===== */
 function keyOf(it: CartItem): string {
   const addsKey = (it.adds || [])
     .map((a) => a.name?.trim().toLowerCase())
@@ -34,7 +35,6 @@ function keyOf(it: CartItem): string {
     .join("|");
   return `${it.productId}__${it.sizeKey}__${addsKey}`;
 }
-
 function readCart(): CartItem[] {
   try {
     const raw = localStorage.getItem("cart");
@@ -49,7 +49,6 @@ function writeCart(arr: CartItem[]) {
   (window as any).CartBadge?.update?.();
   window.dispatchEvent(new Event("cart:updated"));
 }
-
 function groupCart(raw: CartItem[]): (CartItem & { qty: number })[] {
   const map = new Map<string, CartItem & { qty: number }>();
   raw.forEach((it) => {
@@ -60,7 +59,6 @@ function groupCart(raw: CartItem[]): (CartItem & { qty: number })[] {
   });
   return Array.from(map.values());
 }
-
 function unitRegular(it: CartItem): number {
   const reg = (it.price ?? it.basePrice) || 0;
   const adds = (it.adds || []).reduce((s, a) => s + (a.addPrice || 0), 0);
@@ -74,7 +72,6 @@ function unitPay(it: CartItem, authed: boolean): number {
   const adds = (it.adds || []).reduce((s, a) => s + (a.addPrice || 0), 0);
   return base + adds;
 }
-
 function readUser(): UserProfile {
   try {
     const raw = localStorage.getItem("user");
@@ -84,7 +81,6 @@ function readUser(): UserProfile {
     return {};
   }
 }
-
 function humanPay(method?: string) {
   const v = (method || "").toLowerCase();
   if (v === "cash") return "Cash";
@@ -92,18 +88,47 @@ function humanPay(method?: string) {
   return method || "-";
 }
 
+/* ===== роль из JWT в localStorage (base64url decode) ===== */
+function base64UrlDecode(s: string): string {
+  try {
+    const pad = s.length % 4 === 2 ? "==" : s.length % 4 === 3 ? "=" : "";
+    const b64 = s.replace(/-/g, "+").replace(/_/g, "/") + pad;
+    return atob(b64);
+  } catch {
+    return "";
+  }
+}
+function getTokenRole(): string | null {
+  try {
+    const t = localStorage.getItem("authToken");
+    if (!t) return null;
+    const [, payload] = t.split(".");
+    if (!payload) return null;
+    const data = JSON.parse(base64UrlDecode(payload) || "{}");
+    let role: unknown = data?.role;
+    if (!role && Array.isArray(data?.roles)) role = data.roles[0];
+    if (!role && Array.isArray(data?.authorities)) role = data.authorities[0];
+    return typeof role === "string" ? role : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function CartPage() {
   const [raw, setRaw] = useState<CartItem[]>([]);
   const [authed, setAuthed] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserProfile>({});
+  const [isAdmin, setIsAdmin] = useState(false); // ← добавили
   const router = useRouter();
 
   // авторизация + профиль пользователя
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    setIsLoggedIn(!!token);
-    setAuthed(!!token);
+    const logged = !!token;
+    setIsLoggedIn(logged);
+    setAuthed(logged);
+    setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
 
     async function loadProfile() {
       if (!token) return setUser({});
@@ -119,17 +144,18 @@ export default function CartPage() {
         setUser({});
       }
     }
-
     loadProfile();
 
     const handleLogin = () => {
       setIsLoggedIn(true);
       setAuthed(true);
+      setIsAdmin((getTokenRole() || "").toLowerCase() === "admin");
       loadProfile();
     };
     const handleLogout = () => {
       setIsLoggedIn(false);
       setAuthed(false);
+      setIsAdmin(false);
       setUser({});
     };
 
@@ -143,12 +169,10 @@ export default function CartPage() {
 
   const handleAuthClick = () => {
     if (isLoggedIn) {
-      // sign out
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       window.dispatchEvent(new Event("auth:logout"));
     } else {
-      // redirect to signin with redirect-back — но если уже логин, редирект в меню у нас сделан на /signin/page
       const next = `${location.pathname}${location.search}${location.hash}`;
       router.push(`/signin?next=${encodeURIComponent(next)}`);
     }
@@ -170,17 +194,21 @@ export default function CartPage() {
     setRaw(readCart());
     setAuthed(isAuthed());
     setUser(readUser());
+    setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
+
     const onStorage = (e: StorageEvent) => {
       if (e.key === "cart" || e.key === "authToken" || e.key === "user") {
         setRaw(readCart());
         setAuthed(isAuthed());
         setUser(readUser());
+        setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
       }
     };
     const onCart = () => setRaw(readCart());
     const onAuth = () => {
       setAuthed(isAuthed());
       setUser(readUser());
+      setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
     };
     window.addEventListener("storage", onStorage);
     window.addEventListener("cart:updated", onCart);
@@ -194,6 +222,7 @@ export default function CartPage() {
     };
   }, []);
 
+  /* cart ops */
   const inc = (it: CartItem & { qty: number }) => {
     const clone = [...raw, { ...it, qty: undefined } as CartItem];
     writeCart(clone);
@@ -220,48 +249,47 @@ export default function CartPage() {
     setRaw([]);
   };
 
-const placeOrder = async () => {
-  if (!isLoggedIn) return alert("Please sign in to confirm the order.");
-  if (grouped.length === 0) return alert("Your cart is empty");
+  /* place order */
+  const placeOrder = async () => {
+    if (!isLoggedIn) return alert("Please sign in to confirm the order.");
+    if (grouped.length === 0) return alert("Your cart is empty");
 
-  const token = localStorage.getItem("authToken") || "";
+    const token = localStorage.getItem("authToken") || "";
+    const payload = {
+      items: grouped.map((it) => ({
+        productId: it.productId,
+        quantity: it.qty || 1,
+        size: it.sizeKey,
+        additives: (it.adds || []).map((a) => a.name),
+      })),
+    };
 
-  const payload = {
-    items: grouped.map(it => ({
-      productId: it.productId,
-      quantity: it.qty || 1,
-      size: it.sizeKey,                          // "s"/"m"/"l"
-      additives: (it.adds || []).map(a => a.name) // имена добавок
-    })),
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
+      clear();
+      alert(`Thanks! Order #${json?.data?.id} placed.`);
+    } catch (e) {
+      // не трогаем e.message, чтобы не ловить TS ошибки
+      alert(`Failed to place order: ${String(e)}`);
+    }
   };
-
-  try {
-    const res = await fetch("/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        accept: "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
-      },
-      body: JSON.stringify(payload),
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
-
-    clear();
-    alert(`Thanks! Order #${json?.data?.id} placed.`);
-  } catch (e: any) {
-    alert(`Failed to place order: ${String(e?.message || e)}`);
-  }
-};
-
 
   const addressText =
     user?.city && user?.street && user?.houseNumber
       ? `${user.city}, ${user.street}, ${user.houseNumber}`
       : "-";
 
-  const showTwoTotals = totals.regular > totals.pay; // когда есть скидка для авторизованных
+  const showTwoTotals = totals.regular > totals.pay;
 
   return (
     <main className="container cart-page">
@@ -350,7 +378,7 @@ const placeOrder = async () => {
         )}
       </ul>
 
-      {/* Сводка по заказу: Total / Address / Pay by */}
+      {/* Summary */}
       <div className="cart-summary">
         <dl className="sum-list">
           <div className="row">
@@ -380,6 +408,13 @@ const placeOrder = async () => {
       </div>
 
       <div className="cart-actions">
+        {/* Кнопка Admin строго по роли из JWT */}
+        {isAdmin && (
+          <a className="btn-crt btn-outline" href="/admin">
+            Admin
+          </a>
+        )}
+
         {/* Confirm видна только для залогиненного */}
         {isLoggedIn && (
           <button className="btn-crt btn-outline" onClick={placeOrder}>
@@ -392,14 +427,12 @@ const placeOrder = async () => {
         </button>
 
         {/* Кнопки аутентификации */}
-        {!isLoggedIn && (
+        {!isLoggedIn ? (
           <>
             <button
               className="btn-crt btn-outline"
               onClick={() => {
                 const next = `${location.pathname}${location.search}${location.hash}`;
-                // если уже залогинен — у нас на /signin есть автопереадресация в /menu
-                // если нет — перейдём на страницу входа
                 location.href = `/signin?next=${encodeURIComponent(next)}`;
               }}
             >
@@ -415,9 +448,7 @@ const placeOrder = async () => {
               Register
             </button>
           </>
-        )}
-
-        {isLoggedIn && (
+        ) : (
           <button className="btn-crt btn-outline" onClick={handleAuthClick}>
             Sign out
           </button>

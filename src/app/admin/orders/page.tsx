@@ -1,8 +1,12 @@
-//admin/orders/page.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { isLoggedIn, getUser, signOut } from "@/lib/auth";
+import {
+  isLoggedIn as isLoggedInRaw,
+  getUser as getUserRaw,
+  signOut,
+} from "@/lib/auth";
+import styles from "@/styles/adminButtons.module.css";
 
 type AdminOrder = {
   id: number;
@@ -27,26 +31,94 @@ type AdminOrder = {
   }[];
 };
 
+type DaySection = {
+  dayIso: string; // YYYY-MM-DD (UTC)
+  totalCents: number;
+  orders: AdminOrder[];
+};
+
 const money = (c: number) => `$${(c / 100).toFixed(2)}`;
 const dateFmt = (s: string) => new Date(s).toLocaleString();
+const dayTitle = (iso: string) => {
+  const d = new Date(iso + "T00:00:00Z");
+  return d.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+function errToString(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  try {
+    return String(e);
+  } catch {
+    return "Unknown error";
+  }
+}
 
 export default function AdminOrdersPage() {
-  const [loading, setLoading] = useState(true);
-  const [orders, setOrders] = useState<AdminOrder[]>([]);
-  const [err, setErr] = useState<string>("");
+  // --- ключевые флаги, чтобы избежать SSR→CSR рассинхронизации
+  const [mounted, setMounted] = useState(false);
+  const [authed, setAuthed] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
 
-  const me = getUser();
+  const [loading, setLoading] = useState(true);
+  const [sections, setSections] = useState<DaySection[]>([]);
+  const [err, setErr] = useState<string>("");
+  const [nextBefore, setNextBefore] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(false);
+
   const iAmAdmin = useMemo(
-    () => !!me && (me.role || "").toLowerCase() === "admin",
-    [me]
+    () => authed && (role || "").toLowerCase() === "admin",
+    [authed, role]
   );
 
-  async function load() {
+  // Маунт: только тут читаем localStorage
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const ok = isLoggedInRaw();
+      const me = getUserRaw();
+      setAuthed(ok);
+      setRole(me?.role ?? null);
+    } catch {
+      setAuthed(false);
+      setRole(null);
+    }
+  }, []);
+
+  // Загрузка данных, только когда знаем что авторизованы как admin
+  useEffect(() => {
+    if (!mounted) return;
+    if (!iAmAdmin) {
+      setSections([]);
+      setLoading(false);
+      return;
+    }
+    initialLoad(); // eslint-disable-line @typescript-eslint/no-use-before-define
+    const onAuth = () => initialLoad();
+    window.addEventListener("auth:login", onAuth);
+    window.addEventListener("auth:logout", onAuth);
+    return () => {
+      window.removeEventListener("auth:login", onAuth);
+      window.removeEventListener("auth:logout", onAuth);
+    };
+  }, [mounted, iAmAdmin]);
+
+  async function fetchDays(opts?: {
+    cursor?: string | null;
+    days?: number;
+  }): Promise<DaySection[]> {
     setLoading(true);
     setErr("");
     try {
       const token = localStorage.getItem("authToken") || "";
-      const res = await fetch("/api/admin/orders", {
+      const params = new URLSearchParams();
+      params.set("days", String(opts?.days ?? 3));
+      if (opts?.cursor) params.set("cursor", opts.cursor);
+
+      const res = await fetch(`/api/admin/orders?${params.toString()}`, {
         headers: {
           accept: "application/json",
           Authorization: token ? `Bearer ${token}` : "",
@@ -55,32 +127,45 @@ export default function AdminOrdersPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json?.error || `HTTP ${res.status}`);
-      setOrders(json?.data?.orders || []);
-    } catch (e: any) {
-      setErr(String(e?.message || e) || "Failed to load");
+
+      const daysResp = (json?.data?.days ?? []) as DaySection[];
+      setNextBefore(json?.data?.nextBefore ?? null);
+      setHasMore(Boolean(json?.data?.hasMore));
+      return daysResp;
+    } catch (e) {
+      setErr(errToString(e));
+      return [];
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    if (!isLoggedIn()) return;
-    load();
-    const onAuth = () => load();
-    window.addEventListener("auth:login", onAuth);
-    window.addEventListener("auth:logout", onAuth);
-    return () => {
-      window.removeEventListener("auth:login", onAuth);
-      window.removeEventListener("auth:logout", onAuth);
-    };
-  }, []);
+  async function initialLoad() {
+    const first = await fetchDays({ days: 3 });
+    setSections(first);
+  }
 
-  if (!isLoggedIn()) {
+  async function loadMore() {
+    if (!nextBefore) return;
+    const more = await fetchDays({ days: 3, cursor: nextBefore });
+    setSections((prev) => [...prev, ...more]);
+  }
+
+  // --- Стабильный SSR-рендер (одинаковый HTML до маунта на сервере и в браузере)
+  if (!mounted) {
+    return <main className="container" />; // пустой контейнер, без ветвлений
+  }
+
+  if (!authed) {
     return (
       <main className="container">
         <h1>Admin · Orders</h1>
         <p>You must sign in.</p>
-        <p><a href="/signin?next=%2Fadmin%2Forders" className="btn">Sign in</a></p>
+        <p>
+          <a href="/signin?next=%2Fadmin%2Forders" className={styles.btn}>
+            Sign in
+          </a>
+        </p>
       </main>
     );
   }
@@ -90,111 +175,158 @@ export default function AdminOrdersPage() {
       <main className="container">
         <h1>Admin · Orders</h1>
         <p>Forbidden: admin role required.</p>
-        <button className="btn" onClick={() => signOut()}>Sign out</button>
+        <button className={styles.btn} onClick={() => signOut()}>
+          Sign out
+        </button>
       </main>
     );
   }
 
   return (
-    <main className="container admin-orders">
-      <header style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12}}>
-        <h1>Admin · Orders</h1>
-        <div style={{display:"flex",gap:8}}>
-          <button className="btn btn-outline" onClick={load} disabled={loading}>
+    <main className="container">
+      <header className={styles.header}>
+        <div className={styles.headerLeft}>
+          <h1>Admin · Orders</h1>
+        </div>
+
+        <div className={styles.btnRow}>
+          <button
+            className={styles.btn}
+            onClick={initialLoad}
+            disabled={loading}
+          >
             {loading ? "Loading…" : "Refresh"}
           </button>
-          <button className="btn btn-outline" onClick={() => signOut()}>Sign out</button>
+          <button className={styles.btn} onClick={() => signOut()}>
+            Sign out
+          </button>
         </div>
       </header>
+      <div>
+        <a href="/admin" className={styles.btnBack}>
+          Return
+        </a>
+      </div>
+      {err && <div className={styles.toastErr}>{err}</div>}
 
-      {err && <div className="toast toast--err">{err}</div>}
-
-      {loading ? (
-        <div className="fav-loader" style={{marginTop:16}}>
-          <span className="fav-spinner" aria-hidden="true" /> Loading…
-        </div>
-      ) : orders.length === 0 ? (
-        <p style={{marginTop:16}}>No orders yet.</p>
+      {loading && sections.length === 0 ? (
+        <div style={{ marginTop: 16 }}>Loading…</div>
+      ) : sections.length === 0 ? (
+        <p style={{ marginTop: 16 }}>No orders yet.</p>
       ) : (
-        <div className="table-wrap" style={{overflowX:"auto",marginTop:16}}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Created</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Customer</th>
-                <th>Address</th>
-                <th>Pay by</th>
-                <th>Items</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map(o => {
-                const addr = o.customer
-                  ? [o.customer.city, o.customer.street, o.customer.houseNumber]
-                      .filter(Boolean).join(", ")
-                  : "-";
-                return (
-                  <tr key={o.id}>
-                    <td>#{o.id}</td>
-                    <td>{dateFmt(o.createdAt)}</td>
-                    <td>
-                      <span className={`badge badge--${o.status.toLowerCase()}`}>
-                        {o.status}
-                      </span>
-                    </td>
-                    <td><strong>{money(o.totalCents)}</strong></td>
-                    <td>
-                      {o.customer ? (
-                        <>
-                          <div>{o.customer.login}</div>
-                          <div className="muted">#{o.customer.id}</div>
-                        </>
-                      ) : "-"}
-                    </td>
-                    <td>{addr || "-"}</td>
-                    <td>{o.customer?.paymentMethod || "-"}</td>
-                    <td>
-                      <ul style={{margin:0,paddingLeft:18}}>
-                        {o.items.map(it => {
-                          const adds: string[] = (() => {
-                            try { return JSON.parse(it.additivesJson || "[]"); }
-                            catch { return []; }
-                          })();
-                          return (
-                            <li key={it.id}>
-                              {it.product?.name || "Product"} · {it.size} × {it.quantity} — {money(it.unitCents)}
-                              {adds.length ? <> — <span className="muted">{adds.join(", ")}</span></> : null}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+        <>
+          {sections.map((sec) => (
+            <section key={sec.dayIso} style={{ marginTop: 16 }}>
+              <h2 style={{ margin: 0, marginBottom: 8 }}>
+                {dayTitle(sec.dayIso)}
+              </h2>
+              <div style={{ overflowX: "auto" }}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Created</th>
+                      <th>Total</th>
+                      <th>Customer</th>
+                      <th>Address</th>
+                      <th>Pay by</th>
+                      <th>Items</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sec.orders.map((o) => {
+                      const addr = o.customer
+                        ? [
+                            o.customer.city,
+                            o.customer.street,
+                            o.customer.houseNumber,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")
+                        : "-";
+                      return (
+                        <tr key={o.id}>
+                          <td>#{o.id}</td>
+                          <td>{dateFmt(o.createdAt)}</td>
 
-      <style jsx>{`
-        .btn { padding:8px 14px; border-radius:8px; border:1px solid #ddd; background:#fff; cursor:pointer; }
-        .btn-outline { background:#fff; }
-        .toast { margin-top:12px; padding:10px 12px; border-radius:8px; }
-        .toast--err { background:#ffe8e6; border:1px solid #ffb3ac; }
-        .table { width:100%; border-collapse:collapse; }
-        .table th, .table td { padding:10px 12px; border-bottom:1px solid #eee; vertical-align:top; }
-        .muted { color:#666; font-size:12px; }
-        .badge { padding:2px 8px; border-radius:999px; font-size:12px; border:1px solid #ddd; }
-        .badge--new { background:#f2f7ff; border-color:#9ec5ff; }
-        .badge--paid { background:#eefcf3; border-color:#98e6b5; }
-        .badge--in_progress { background:#fff7e6; border-color:#ffd27a; }
-        .badge--done { background:#ecfdf5; border-color:#a7f3d0; }
-        .badge--canceled { background:#fff1f2; border-color:#fecdd3; }
-      `}</style>
+                          <td>
+                            <strong>{money(o.totalCents)}</strong>
+                          </td>
+                          <td>
+                            {o.customer ? (
+                              <>
+                                <div>{o.customer.login}</div>
+                                <div className="muted">#{o.customer.id}</div>
+                              </>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td>{addr || "-"}</td>
+                          <td>{o.customer?.paymentMethod || "-"}</td>
+                          <td>
+                            <ul style={{ margin: 0, paddingLeft: 18 }}>
+                              {o.items.map((it) => {
+                                let adds: string[] = [];
+                                try {
+                                  adds = JSON.parse(it.additivesJson || "[]");
+                                } catch {}
+                                return (
+                                  <li key={it.id}>
+                                    {it.product?.name || "Product"} · {it.size}{" "}
+                                    × {it.quantity} — {money(it.unitCents)}
+                                    {adds.length ? (
+                                      <>
+                                        {" "}
+                                        —{" "}
+                                        <span className="muted">
+                                          {adds.join(", ")}
+                                        </span>
+                                      </>
+                                    ) : null}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    <tr>
+                      <td
+                        colSpan={8}
+                        style={{ textAlign: "right", fontWeight: 600 }}
+                      >
+                        Итого за день: {money(sec.totalCents)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          ))}
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              marginTop: 16,
+            }}
+          >
+            {hasMore ? (
+              <button
+                className={styles.btn}
+                onClick={loadMore}
+                disabled={loading}
+              >
+                {loading ? "Loading…" : "Load previous days"}
+              </button>
+            ) : (
+              <span className="muted">Больше дней нет.</span>
+            )}
+          </div>
+        </>
+      )}
     </main>
   );
 }
