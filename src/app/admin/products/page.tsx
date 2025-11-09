@@ -204,9 +204,9 @@ export default function AdminProductsPage() {
           <a href="/admin/users" className={styles.btn}>
             Users
           </a>
-          <button className={styles.btn} onClick={signOut}>
-            Sign out
-          </button>
+          <a href="/menu" className={styles.btn}>
+            Menu
+          </a>
         </div>
       </header>
 

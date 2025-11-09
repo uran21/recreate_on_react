@@ -153,6 +153,7 @@ export default function AdminApp({
           <a href="/admin/orders" className={styles.btn}>
             Orders
           </a>
+
           <button
             className={styles.btn}
             onClick={() => location.reload()}
@@ -160,9 +161,10 @@ export default function AdminApp({
           >
             {loading ? "Loading…" : "Refresh"}
           </button>
-          <button className={styles.btn} onClick={() => signOut()}>
-            Sign out
-          </button>
+
+          <a href="/menu" className={styles.btn}>
+            Menu
+          </a>
         </div>
       </header>
       {err && <div className={styles.toastErr}>{err}</div>}

@@ -197,9 +197,6 @@ export default function AdminOrdersPage() {
           >
             {loading ? "Loading…" : "Refresh"}
           </button>
-          <button className={styles.btn} onClick={() => signOut()}>
-            Sign out
-          </button>
         </div>
       </header>
       <div>
