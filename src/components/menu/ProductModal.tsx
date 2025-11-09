@@ -39,44 +39,69 @@ export default function ProductModal({
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/products/${productId}`, { cache: "no-store" });
-        const raw = await res.json();
-        const d = raw?.data ?? raw;
+        const res = await fetch(`/api/products/${productId}`, {
+          cache: "no-store",
+        });
 
+        // 1) Проверяем статус
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(
+            `GET /api/products/${productId} failed: ${res.status} ${
+              res.statusText
+            } ${text?.slice(0, 200)}`
+          );
+        }
+
+        // 2) Безопасный парсинг JSON
+        let raw: any = null;
+        try {
+          raw = await res.json();
+        } catch (e) {
+          throw new Error(
+            `Failed to parse JSON for product ${productId}: ${
+              (e as Error).message
+            }`
+          );
+        }
+
+        const d = raw?.data ?? raw;
+        if (!d || typeof d !== "object") {
+          throw new Error(
+            `API returned empty or invalid payload for product ${productId}`
+          );
+        }
+
+        // 3) Нормализуем поля (защита от null/undefined)
         const details: ProductDetails = {
-          id: d.id,
-          name: d.name,
-          description: d.description ?? "",
-          price: String(d.price),
-          discountPrice: d.discountPrice ? String(d.discountPrice) : undefined,
-          category: d.category as Category,
-          images: d.images ?? [],
+          id: Number(d.id),
+          name: String(d.name ?? ""),
+          description: String(d.description ?? ""),
+          price: String(d.price ?? ""),
+          discountPrice:
+            d.discountPrice != null ? String(d.discountPrice) : undefined,
+          category: (d.category ?? cat) as Category,
+          images: Array.isArray(d.images) ? d.images : [],
           sizes: d.sizes ?? undefined,
-          additives: d.additives ?? [],
+          additives: Array.isArray(d.additives) ? d.additives : [],
         };
 
         if (abort) return;
         setData(details);
 
         // ---- ЕДИНЫЙ ДЕФОЛТ РАЗМЕР ----
-        // 1) если пришла cardListPriceCents — пробуем найти размер, у которого рег. цена совпадает
-        // 2) иначе берём 's', если есть
-        // 3) иначе — самый дешёвый по регулярной цене
         const { all } = normalizeSizesAll(details.sizes);
-
         let initKey: string | undefined;
+
         if (cardListPriceCents && Object.keys(all).length) {
           const match = Object.entries(all).find(
             ([, s]) => getPriceCents(s, false) === cardListPriceCents
           );
-          if (match) {
-            initKey = match[0];
-          }
+          if (match) initKey = match[0];
         }
         if (!initKey) {
-          if (all["s"]) {
-            initKey = "s";
-          } else if (Object.keys(all).length) {
+          if (all["s"]) initKey = "s";
+          else if (Object.keys(all).length) {
             initKey = Object.entries(all).sort(
               (a, b) => getPriceCents(a[1], false) - getPriceCents(b[1], false)
             )[0]?.[0];
@@ -84,6 +109,21 @@ export default function ProductModal({
         }
         setSizeKey(initKey ?? "s");
         setAddsOn(new Set());
+      } catch (e) {
+        console.error("[ProductModal] load error:", e);
+        // Можем показать небольшую заглушку вместо вечного «Loading…»
+        if (!abort) {
+          setData({
+            id: productId,
+            name: "Unavailable",
+            description: "Failed to load details.",
+            price: "",
+            category: cat,
+            images: [],
+            sizes: undefined,
+            additives: [],
+          } as ProductDetails);
+        }
       } finally {
         if (!abort) setLoading(false);
       }
@@ -91,11 +131,12 @@ export default function ProductModal({
     return () => {
       abort = true;
     };
-  }, [productId, cardListPriceCents]); // важно слушать cardListPriceCents
+  }, [productId, cardListPriceCents, cat]);
 
   const imgSrc = useMemo(() => {
     if (!data) return cardImg || imgForByCat(productId, cat);
-    const fromApi = Array.isArray(data.images) && data.images[0] ? data.images[0] : "";
+    const fromApi =
+      Array.isArray(data.images) && data.images[0] ? data.images[0] : "";
     return fromApi || cardImg || imgForByCat(data.id, data.category);
   }, [data, cardImg, productId, cat]);
 
@@ -134,7 +175,9 @@ export default function ProductModal({
   const addToCart = () => {
     if (!data) return;
     const sizeObj = sizesAll[sizeKey];
-    const sizeRegC = sizeObj ? getPriceCents(sizeObj, false) : getPriceCents(data, false);
+    const sizeRegC = sizeObj
+      ? getPriceCents(sizeObj, false)
+      : getPriceCents(data, false);
     const sizeDisc =
       sizeObj?.discountPrice != null
         ? toCents(sizeObj.discountPrice)
@@ -217,8 +260,10 @@ export default function ProductModal({
               if (!sObj) return null;
 
               const sizeLabel = String(sObj.size ?? sObj.label ?? "");
-              const regC = getPriceCents(sObj, false) || getPriceCents(data, false);
-              const payC = getPriceCents(sObj, authed) || getPriceCents(data, authed);
+              const regC =
+                getPriceCents(sObj, false) || getPriceCents(data, false);
+              const payC =
+                getPriceCents(sObj, authed) || getPriceCents(data, authed);
               const on = k === sizeKey;
 
               return (
@@ -230,7 +275,9 @@ export default function ProductModal({
                   aria-pressed={on}
                   onClick={() => setSizeKey(k)}
                 >
-                  <span className={styles["pm-chip__lead"]}>{k.toUpperCase()}</span>
+                  <span className={styles["pm-chip__lead"]}>
+                    {k.toUpperCase()}
+                  </span>
                   <span dangerouslySetInnerHTML={{ __html: sizeLabel }} />
                   <span
                     className="pm-tt"
@@ -289,10 +336,16 @@ export default function ProductModal({
         </div>
 
         <p className={styles.pm__note}>
-          The cost is not final. Download our mobile app to see the final price and place your order…
+          The cost is not final. Download our mobile app to see the final price
+          and place your order…
         </p>
 
-        <button className={styles.pm__close} type="button" onClick={addToCart} disabled={!data || loading}>
+        <button
+          className={styles.pm__close}
+          type="button"
+          onClick={addToCart}
+          disabled={!data || loading}
+        >
           Add to cart
         </button>
       </div>
