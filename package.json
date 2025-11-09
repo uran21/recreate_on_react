@@ -3,11 +3,16 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:studio": "prisma studio",
+    "postinstall": "prisma generate",
     "seed": "tsx prisma/seed.ts",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=18"
   },
   "devDependencies": {
     "@prisma/client": "^6.19.0",
@@ -33,6 +38,7 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^16.0.1",
     "react": "^19.2.0",
