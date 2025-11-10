@@ -9,30 +9,30 @@ type PlaceOrderPayload = {
   items: Array<{
     productId: number;
     quantity: number;
-    size?: string;            // "s" | "m" | "l" | произвольная метка
-    additives?: string[];     // имена добавок (как в таблице Additive.name)
+    size?: string;           
+    additives?: string[];    
   }>;
 };
 
-// безопасное число
+
 const int = (v: any) => (Number.isFinite(+v) ? Math.trunc(+v) : 0);
 
 export async function POST(req: Request) {
   try {
-    const user = requireUser(req); // <-- серверная проверка JWT
+    const user = requireUser(req); 
 
     const body = (await req.json()) as PlaceOrderPayload;
     if (!body?.items?.length) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    // Соберём id продуктов и имена добавок
+   
     const productIds = Array.from(new Set(body.items.map(i => int(i.productId)))).filter(Boolean);
     const allAddNames = Array.from(
       new Set((body.items.flatMap(i => i.additives || [])).map(s => s.trim()).filter(Boolean))
     );
 
-    // Подтянем продукты
+   
     const products = await prisma.product.findMany({
       where: { id: { in: productIds }, isAvailable: true },
       select: {
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     });
     const pById = new Map(products.map(p => [p.id, p]));
 
-    // Подтянем размеры (если есть) — все сразу
+  
     const sizes = await prisma.productSize.findMany({
       where: { productId: { in: productIds } },
       select: { productId: true, key: true, priceCents: true, discountPriceCents: true, label: true },
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     const sizesByKey = new Map<string, { productId: number; key: string; priceCents: number; discountPriceCents: number | null; label: string | null }>();
     for (const s of sizes) sizesByKey.set(`${s.productId}:${s.key}`, s);
 
-    // Подтянем добавки по имени и связи продукт<->добавка
+ 
     const adds = allAddNames.length
       ? await prisma.additive.findMany({
           where: { name: { in: allAddNames } },
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     });
     const linkSet = new Set(prodAddLinks.map(l => `${l.productId}:${l.additiveId}`));
 
-    // Посчитаем итемы и общий тотал (для авторизованных можем применять скидки)
+
     let totalCents = 0;
     const orderItemsData: {
       productId: number;
@@ -81,23 +81,23 @@ export async function POST(req: Request) {
       const product = pById.get(int(it.productId));
       if (!product) continue;
 
-      // цена за размер: если указан и найден — берём его, иначе — базовую цену товара
+   
       const sizeKey = (it.size || "").trim() || "s";
       const sKey = `${product.id}:${sizeKey}`;
       const sRow = sizesByKey.get(sKey);
 
       const reg = sRow ? sRow.priceCents : product.priceCents;
       const disc = sRow ? sRow.discountPriceCents : product.discountPriceCents;
-      const unitBase = disc != null ? disc : reg; // скидка для авторизованных
+      const unitBase = disc != null ? disc : reg; 
 
-      // добавки: только те, что реально связаны с продуктом
+  
       const addNames = (it.additives || []).filter(Boolean);
       let addsSum = 0;
       const safeAddNames: string[] = [];
       for (const name of addNames) {
         const a = addByName.get(name);
         if (!a) continue;
-        if (!linkSet.has(`${product.id}:${a.id}`)) continue; // нет связи — пропускаем
+        if (!linkSet.has(`${product.id}:${a.id}`)) continue; 
         const aPrice = a.discountPriceCents != null ? a.discountPriceCents : a.priceCents;
         addsSum += aPrice;
         safeAddNames.push(a.name);
@@ -120,7 +120,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No valid items" }, { status: 400 });
     }
 
-    // Создаём заказ
     const order = await prisma.order.create({
       data: {
         customerId: user.id,

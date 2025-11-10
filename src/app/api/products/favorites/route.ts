@@ -18,7 +18,6 @@ export async function GET() {
       where: { name: { in: favoriteNames } },
     });
 
-    // порядок как в макете
     const ordered = favoriteNames
       .map((name) => rows.find((r) => r.name === name))
       .filter(Boolean)
@@ -27,8 +26,8 @@ export async function GET() {
         name: r!.name,
         description: r!.description,
         category: r!.category,
-        price: toMoney(r!.priceCents)!,                 // ← строка "6.50"
-        discountPrice: toMoney(r!.discountPriceCents),  // ← строка или null
+        price: toMoney(r!.priceCents)!,                 
+        discountPrice: toMoney(r!.discountPriceCents),  
       }));
 
     return NextResponse.json({ data: ordered, message: "", error: "" });

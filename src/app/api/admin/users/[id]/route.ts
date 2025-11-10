@@ -16,9 +16,8 @@ function ok(data: any, message = "OK", status = 200) {
   return NextResponse.json({ data, message, error: null }, { status });
 }
 
-// --- helpers ---
+
 async function getId(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
-  // Next 15/16: params — Promise
   try {
     const { id } = await ctx.params;
     const n = Number(id);
@@ -26,7 +25,6 @@ async function getId(req: NextRequest, ctx: { params: Promise<{ id: string }> })
   } catch {
     /* ignore */
   }
-  // fallback по URL
   const m = req.nextUrl.pathname.match(/\/api\/admin\/users\/(\d+)(?:\/)?$/);
   if (m) {
     const n = Number(m[1]);
@@ -43,7 +41,6 @@ function requireAdmin(req: NextRequest): JwtPayload | null {
   return payload;
 }
 
-// --- PATCH ---
 export async function PATCH(
   req: NextRequest,
   ctx: { params: Promise<{ id: string }> }
@@ -66,7 +63,6 @@ export async function PATCH(
   if (typeof paymentMethod === "string") data.paymentMethod = paymentMethod.trim() || null;
 
   if (typeof password === "string" && password.length) {
-    // простой пример валидации — при необходимости подправь под свои правила
     const okPass = /^(?=.*[^\w\s]).{6,}$/.test(password);
     if (!okPass) return bad("Invalid password", 400);
     data.passwordHash = await bcrypt.hash(password, 10);
@@ -103,7 +99,6 @@ export async function PATCH(
   }
 }
 
-// --- DELETE ---
 export async function DELETE(
   req: NextRequest,
   ctx: { params: Promise<{ id: string }> }

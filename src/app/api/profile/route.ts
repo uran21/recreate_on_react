@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // или "../db" — подстрой под свой проект
+import { prisma } from "@/lib/prisma"; 
 import { verifyJwt } from "@/server/jwt";
 
 export async function GET(req: Request) {

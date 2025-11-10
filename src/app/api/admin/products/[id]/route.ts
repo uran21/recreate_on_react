@@ -1,4 +1,3 @@
-// src/app/api/admin/users/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJwt } from "@/server/jwt";
@@ -6,7 +5,6 @@ import { verifyJwt } from "@/server/jwt";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
-// --- helpers ---
 function forbid(msg = "Forbidden") {
   return NextResponse.json({ error: msg }, { status: 403 });
 }
@@ -48,7 +46,6 @@ async function readId(
   return null;
 }
 
-// --- GET ---
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -81,7 +78,6 @@ export async function GET(
   });
 }
 
-// --- PATCH ---
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -146,7 +142,6 @@ export async function PATCH(
   }
 }
 
-// --- DELETE ---
 export async function DELETE(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }

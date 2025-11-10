@@ -1,4 +1,3 @@
-// app/api/session/sync/route.ts
 import { NextResponse } from "next/server";
 import { verifyJwt } from "@/server/jwt";
 export const runtime = "nodejs";

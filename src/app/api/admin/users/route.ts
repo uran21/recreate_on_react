@@ -1,4 +1,3 @@
-// src/app/api/admin/users/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJwt } from "@/server/jwt";
@@ -11,7 +10,6 @@ function bad(msg = "Bad request", code = 400) {
   return NextResponse.json({ error: msg }, { status: code });
 }
 
-// DTO наружу
 type UserDTO = {
   id: number;
   login: string;
@@ -36,8 +34,7 @@ export async function GET(req: Request) {
     include: { city: true, street: true },
   });
 
-  type UserWithRefs = typeof users[number]; // ← тип одного элемента массива
-
+  type UserWithRefs = typeof users[number]; 
   const out: UserDTO[] = users.map((u: UserWithRefs) => ({
     id: u.id,
     login: u.login,

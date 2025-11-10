@@ -26,15 +26,14 @@ export async function GET(req: Request) {
   const days = Math.max(
     1,
     Math.min(365, Number(url.searchParams.get("days")) || 30)
-  ); // 1..365
+  ); 
   const perCategory = Math.max(
     1,
     Math.min(50, Number(url.searchParams.get("limit")) || 5)
-  ); // топ-N в категории
+  ); 
   const since = new Date(Date.now() - days * 24 * 3600 * 1000);
 
-  // Берём заказы за период с их позициями и продуктами
-  const orders = await prisma.order.findMany({
+    const orders = await prisma.order.findMany({
     where: { createdAt: { gte: since } },
     select: {
       items: {
@@ -47,7 +46,7 @@ export async function GET(req: Request) {
     },
   });
 
-  // Аггрегируем в памяти: ключ = category|name
+  
   const map = new Map<string, TopProductOut>();
   for (const o of orders) {
     for (const it of o.items) {
@@ -61,7 +60,7 @@ export async function GET(req: Request) {
     }
   }
 
-  // Группируем по категории -> сортируем -> берём топ-N
+ 
   const byCat = new Map<string, TopProductOut[]>();
   for (const item of map.values()) {
     const cat = item.category || "Other";
@@ -73,7 +72,7 @@ export async function GET(req: Request) {
     byCat.set(cat, arr.slice(0, perCategory));
   }
 
-  // В один плоский список (если на клиенте уже группируете — можно отправлять мапу)
+  
   const topProducts: TopProductOut[] = [];
   for (const arr of byCat.values()) topProducts.push(...arr);
 

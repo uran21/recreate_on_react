@@ -1,4 +1,3 @@
-// app/api/products/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -8,17 +7,14 @@ export async function GET() {
     orderBy: { id: "asc" },
   });
 
-  // ← infer types directly from the query result
-  type ProductWithSizes = typeof items[number];
+  type ProductWithSizes = (typeof items)[number];
   type Size = ProductWithSizes["productSizes"][number];
 
   const data = items.map((p: ProductWithSizes) => {
     const sizes: Size[] = p.productSizes || [];
 
-    // try to find size “s” (small)
     const byS: Size | undefined = sizes.find((s: Size) => s.key === "s");
 
-    // find the cheapest size if no “s” exists
     const cheapest: Size | null =
       sizes.length > 0
         ? sizes.reduce(
@@ -27,7 +23,6 @@ export async function GET() {
           )
         : null;
 
-    // define the default size: prefer “s”, otherwise the cheapest
     const def: Size | null = byS || cheapest || null;
 
     return {

@@ -1,4 +1,3 @@
-// src/app/api/products/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 export const runtime = "nodejs";
@@ -44,7 +43,6 @@ export async function GET(
     return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
   }
 
-  // 🔧 ПРОДУКТ — все идентификаторы в двойных кавычках
   const prodRows = await prisma.$queryRaw<DbProduct[]>`
     SELECT "id","name","description","priceCents","discountPriceCents","category","image","sizesJson","additivesJson"
     FROM "Product"
@@ -56,7 +54,6 @@ export async function GET(
   }
   const p: DbProduct = prodRows[0];
 
-  // 🔧 SIZES — тоже кавычки
   let sizes: Record<
     string,
     { size: string | null; price: string; discountPrice: string | null }
@@ -100,8 +97,7 @@ export async function GET(
     }
   }
 
-  // 🔧 ADDITIVES — кавычки на таблицах/полях
-  let additives: Array<{
+   let additives: Array<{
     name: string;
     price: string;
     discountPrice: string | null;

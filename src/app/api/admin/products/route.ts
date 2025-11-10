@@ -1,10 +1,8 @@
-// app/api/admin/products/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyJwt } from "@/server/jwt";
 import type { Prisma } from "@prisma/client";
 
-// Типы входных данных
 type SizeIn = {
   key: "s" | "m" | "l" | "xl" | "xxl" | "xxxl";
   label: string | null;
@@ -16,7 +14,7 @@ type BodyIn = {
   name: string;
   description: string | null;
   category: "coffee" | "tea" | "dessert";
-  image: string | null; // ДОЛЖЕН начинаться с /assets/menu/
+  image: string | null; 
   isAvailable: boolean;
   sizes: SizeIn[];
   defaultSizeKey: SizeIn["key"] | null;
@@ -40,7 +38,6 @@ export async function POST(req: Request) {
 
     const body = (await req.json()) as BodyIn;
 
-    // Валидации
     if (!body.name?.trim()) return bad("Name is required");
     if (!body.category || !["coffee", "tea", "dessert"].includes(body.category))
       return bad("Invalid category");
@@ -65,12 +62,12 @@ export async function POST(req: Request) {
         return bad("discountPriceCents must be >= 0");
     }
 
-    // sizesJson в БД — массив ключей, напр. ["s","m","l"]
+  
     const sizesJsonKeys = JSON.stringify(body.sizes.map((s) => s.key));
 
     const result = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
-        // 👈 типизируем tx
+
         const defaultSize =
           (body.defaultSizeKey &&
             body.sizes.find((s) => s.key === body.defaultSizeKey)) ||
@@ -83,8 +80,8 @@ export async function POST(req: Request) {
             priceCents: defaultSize.priceCents,
             discountPriceCents: defaultSize.discountPriceCents,
             category: body.category,
-            image, // уже прошёл проверку на /assets/menu/
-            sizesJson: sizesJsonKeys, // только массив ключей
+            image, 
+            sizesJson: sizesJsonKeys, 
             isAvailable: !!body.isAvailable,
           },
           select: {
@@ -102,7 +99,7 @@ export async function POST(req: Request) {
           },
         });
 
-        // Нормализованные размеры (деталка в ProductSize)
+
         await tx.productSize.createMany({
           data: body.sizes.map((s) => ({
             productId: product.id,
@@ -111,7 +108,7 @@ export async function POST(req: Request) {
             priceCents: s.priceCents,
             discountPriceCents: s.discountPriceCents,
           })),
-          // В вашей версии Prisma skipDuplicates может быть недоступен — не используем
+
         });
 
         return product;
@@ -120,7 +117,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ data: result }, { status: 201 });
   } catch (e) {
-    // см. пункт (2)
+
     const msg = e instanceof Error ? e.message : "Server error";
     console.error("Create product error:", e);
     return NextResponse.json({ error: msg }, { status: 500 });

@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       cityId,
       streetId,
       houseNumber,
-      paymentMethod, // "cash" | "card"
+      paymentMethod, 
     } = body || {};
 
     if (!login || !password) {
@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
     const exists = await prisma.user.findUnique({ where: { login } });
     if (exists) return NextResponse.json({ error: "Login already exists" }, { status: 409 });
 
-    // проверим, что такие город/улица есть и связаны
     const street = await prisma.street.findFirst({
       where: { id: Number(streetId), cityId: Number(cityId) },
       include: { city: true },
@@ -53,13 +52,12 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // токен (минимальный payload)
+
     const token = jwt.sign({ sub: user.id, login: user.login, role: user.role }, JWT_SECRET, {
       expiresIn: "7d",
     });
 
-    // возвращаем и id, и «человеческие» названия — чтобы Cart мог сразу показать адрес
-    return NextResponse.json({
+        return NextResponse.json({
       data: {
         access_token: token,
         user: {

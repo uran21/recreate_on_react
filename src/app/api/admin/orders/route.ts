@@ -10,7 +10,6 @@ function startOfDayUTC(d: Date) {
   );
 }
 function dayKeyUTC(d: Date): string {
-  // YYYY-MM-DD по UTC (удобно и стабильно для сервера)
   return d.toISOString().slice(0, 10);
 }
 
@@ -25,15 +24,13 @@ export async function GET(req: Request) {
     const days = Math.max(
       1,
       Math.min(10, Number(url.searchParams.get("days")) || 3)
-    ); // 1..10
-    const cursorRaw = url.searchParams.get("cursor"); // ISO-строка или null
+    );
+    const cursorRaw = url.searchParams.get("cursor");
     const cursor = cursorRaw ? new Date(cursorRaw) : new Date();
     if (isNaN(cursor.getTime())) {
       return NextResponse.json({ error: "Invalid cursor" }, { status: 400 });
     }
 
-    // Берём достаточно заказов "в запас" (например, 800), чтобы точно набрать 3 дня
-    // При необходимости увеличь/уменьши take под свои объёмы.
     const chunk = await prisma.order.findMany({
       where: { createdAt: { lt: cursor } },
       orderBy: { createdAt: "desc" },
@@ -66,9 +63,8 @@ export async function GET(req: Request) {
       },
     });
 
-    // Группируем по дате (UTC) и берём не более N разных дат
     type DayBucket = {
-      dayIso: string; // YYYY-MM-DD (UTC)
+      dayIso: string;
       totalCents: number;
       orders: any[];
     };
@@ -78,7 +74,7 @@ export async function GET(req: Request) {
     for (const o of chunk) {
       const k = dayKeyUTC(o.createdAt);
       if (!buckets[k]) {
-        if (dayOrder.length >= days) break; // уже набрали нужное кол-во дат
+        if (dayOrder.length >= days) break;
         buckets[k] = { dayIso: k, totalCents: 0, orders: [] };
         dayOrder.push(k);
       }
@@ -98,22 +94,20 @@ export async function GET(req: Request) {
 
     const daysOut = dayOrder.map((k) => buckets[k]);
 
-    // Сформируем nextBefore: это 00:00 UTC дня, который идёт ПЕРЕД самым старым из выданных
     let nextBefore: string | null = null;
     let hasMore = false;
     if (dayOrder.length > 0) {
-      const oldestDayIso = dayOrder[dayOrder.length - 1]; // последний в списке — самый старый день
+      const oldestDayIso = dayOrder[dayOrder.length - 1];
       const [y, m, d] = oldestDayIso.split("-").map(Number);
       const oldestDayStart = new Date(
         Date.UTC(y, (m as number) - 1, d as number, 0, 0, 0, 0)
       );
-      // следующий курсор — начало суток ещё на день раньше
+
       const prevDayStart = new Date(
         oldestDayStart.getTime() - 24 * 60 * 60 * 1000
       );
       nextBefore = prevDayStart.toISOString();
 
-      // Проверяем, есть ли ещё заказы раньше prevDayStart
       const more = await prisma.order.findFirst({
         where: { createdAt: { lt: prevDayStart } },
         select: { id: true },
