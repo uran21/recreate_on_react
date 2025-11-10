@@ -7,9 +7,8 @@ function readCount(): number {
     const raw = localStorage.getItem("cart");
     if (!raw) return 0;
     const v = JSON.parse(raw);
-    if (Array.isArray(v)) return v.length;           // твой текущий формат
+    if (Array.isArray(v)) return v.length;           
     if (v && typeof v === "object") {
-      // если вдруг будет формат {key: item}
       return Object.values(v as Record<string, any>)
         .reduce((n, it: any) => n + (Number(it?.qty) || 1), 0);
     }
@@ -24,16 +23,13 @@ export default function CartLink({ onClick }: { onClick?: () => void } = {}) {
 
   useEffect(() => {
     const update = () => setCount(readCount());
-    update(); // сразу при маунте
+    update(); 
 
-    // 1) ловим кастомное событие из модалки
     window.addEventListener("cart:updated", update);
 
-    // 2) совместимость с ванилью: global CartBadge.update()
     (window as any).CartBadge = (window as any).CartBadge || {};
     (window as any).CartBadge.update = update;
 
-    // 3) storage — обновит в других вкладках
     const onStorage = (e: StorageEvent) => {
       if (e.key === "cart") update();
     };
@@ -42,12 +38,10 @@ export default function CartLink({ onClick }: { onClick?: () => void } = {}) {
     return () => {
       window.removeEventListener("cart:updated", update);
       window.removeEventListener("storage", onStorage);
-      // опционально: чистить глобал не обязательно
     };
   }, []);
 
-  if (count <= 0) return null; // скрываем, пока корзина пуста
-
+  if (count <= 0) return null; 
   return (
     <Link className="nav-link nav-link--cart" href="/cart" onClick={onClick}>
       <span>Cart</span>

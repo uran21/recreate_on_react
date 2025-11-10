@@ -32,7 +32,7 @@ type AdminOrder = {
 };
 
 type DaySection = {
-  dayIso: string; // YYYY-MM-DD (UTC)
+  dayIso: string;
   totalCents: number;
   orders: AdminOrder[];
 };
@@ -58,7 +58,6 @@ function errToString(e: unknown): string {
 }
 
 export default function AdminOrdersPage() {
-  // --- ключевые флаги, чтобы избежать SSR→CSR рассинхронизации
   const [mounted, setMounted] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [role, setRole] = useState<string | null>(null);
@@ -74,7 +73,6 @@ export default function AdminOrdersPage() {
     [authed, role]
   );
 
-  // Маунт: только тут читаем localStorage
   useEffect(() => {
     setMounted(true);
     try {
@@ -88,7 +86,6 @@ export default function AdminOrdersPage() {
     }
   }, []);
 
-  // Загрузка данных, только когда знаем что авторизованы как admin
   useEffect(() => {
     if (!mounted) return;
     if (!iAmAdmin) {
@@ -96,7 +93,7 @@ export default function AdminOrdersPage() {
       setLoading(false);
       return;
     }
-    initialLoad(); // eslint-disable-line @typescript-eslint/no-use-before-define
+    initialLoad();
     const onAuth = () => initialLoad();
     window.addEventListener("auth:login", onAuth);
     window.addEventListener("auth:logout", onAuth);
@@ -151,9 +148,8 @@ export default function AdminOrdersPage() {
     setSections((prev) => [...prev, ...more]);
   }
 
-  // --- Стабильный SSR-рендер (одинаковый HTML до маунта на сервере и в браузере)
   if (!mounted) {
-    return <main className="container" />; // пустой контейнер, без ветвлений
+    return <main className="container" />;
   }
 
   if (!authed) {
@@ -190,11 +186,7 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className={styles.btnRow}>
-          <button
-            className={styles.btn}
-            onClick={initialLoad}
-            disabled={loading}
-          >
+          <button className={styles.btn} onClick={initialLoad} disabled={loading}>
             {loading ? "Loading…" : "Refresh"}
           </button>
         </div>
@@ -245,7 +237,6 @@ export default function AdminOrdersPage() {
                         <tr key={o.id}>
                           <td>#{o.id}</td>
                           <td>{dateFmt(o.createdAt)}</td>
-
                           <td>
                             <strong>{money(o.totalCents)}</strong>
                           </td>
@@ -268,10 +259,11 @@ export default function AdminOrdersPage() {
                                 try {
                                   adds = JSON.parse(it.additivesJson || "[]");
                                 } catch {}
+
                                 return (
                                   <li key={it.id}>
-                                    {it.product?.name || "Product"} · {it.size}{" "}
-                                    × {it.quantity} — {money(it.unitCents)}
+                                    {it.product?.name || "Product"} · {it.size} ×{" "}
+                                    {it.quantity} — {money(it.unitCents)}
                                     {adds.length ? (
                                       <>
                                         {" "}
@@ -292,7 +284,10 @@ export default function AdminOrdersPage() {
                     <tr>
                       <td
                         colSpan={8}
-                        style={{ textAlign: "right", fontWeight: 600 }}
+                        style={{
+                          textAlign: "right",
+                          fontWeight: 600,
+                        }}
                       >
                         Итого за день: {money(sec.totalCents)}
                       </td>

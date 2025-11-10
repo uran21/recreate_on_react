@@ -49,7 +49,6 @@ export default function AdminApp({
     [authed, role]
   );
 
-  // read auth only on the client
   useEffect(() => {
     setMounted(true);
     try {
@@ -92,7 +91,6 @@ export default function AdminApp({
     loadAnalytics();
   }, [mounted, iAmAdmin]);
 
-  // Group top products by category and take top-N for each
   const grouped = useMemo(() => {
     const map = new Map<string, TopProduct[]>();
     for (const p of topProducts) {
@@ -100,10 +98,10 @@ export default function AdminApp({
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(p);
     }
-    // sort within category by revenue and quantity
+    
     for (const [k, arr] of map.entries()) {
       arr.sort((a, b) => b.revenueCents - a.revenueCents || b.qty - a.qty);
-      map.set(k, arr.slice(0, 5)); // show top 5
+      map.set(k, arr.slice(0, 5)); 
     }
     return map;
   }, [topProducts]);
@@ -169,7 +167,6 @@ export default function AdminApp({
       </header>
       {err && <div className={styles.toastErr}>{err}</div>}
 
-      {/* --- Block: Top sales by category (last 30 days) --- */}
       <section style={{ marginTop: 16 }}>
         <h2 style={{ margin: 0, marginBottom: 8 }}>
           Top sales by category · last 30 days
@@ -223,8 +220,7 @@ export default function AdminApp({
         )}
       </section>
 
-      {/* --- (Optional) block: latest users --- */}
-      {initialUsers?.length ? (
+        {initialUsers?.length ? (
         <section style={{ marginTop: 32, paddingInline: 8 }}>
           <h2 style={{ margin: 0, marginBottom: 8 }}>Recent users</h2>
           <div style={{ overflowX: "auto" }}>
@@ -271,7 +267,6 @@ export default function AdminApp({
   );
 }
 
-// helper for category titles
 function categoryTitle(key: string): string {
   const k = key.toLowerCase();
   if (k.includes("coffee")) return "Coffee";

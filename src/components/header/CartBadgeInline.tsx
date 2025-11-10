@@ -28,7 +28,6 @@ export default function CartBadgeInline() {
   return (
     <Link className="nav-link nav-link--cart" href="/cart">
       <span>Cart</span>
-      {/* Бэйдж показываем только если >0, но ссылка всегда есть */}
       {count > 0 && (
         <span className="cart-badge" aria-live="polite">{count}</span>
       )}

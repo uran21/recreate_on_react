@@ -1,10 +1,8 @@
-/* eslint-disable no-console */
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-// База API берётся из .env.local/NEXT_PUBLIC_API_BASE_URL, либо дефолт как у тебя сейчас
 const API_BASE =
   (process.env.NEXT_PUBLIC_API_BASE_URL || "http://coffee-shop-be.eu-central-1.elasticbeanstalk.com")
     .replace(/\/+$/, "");
@@ -39,9 +37,6 @@ async function fetchProducts() {
 }
 
 async function upsertByName(p, idx) {
-  // приводи под твою схему Prisma:
-  // name, description, category (String), image (String?),
-  // priceCents (Int), discountPriceCents (Int?), sizesJson (String?), additivesJson (String?), isAvailable (Bool)
   const data = {
     name: p.name,
     description: p.description,
@@ -54,7 +49,6 @@ async function upsertByName(p, idx) {
     isAvailable: true,
   };
 
-  // update по name (если name уникален — отлично; если нет, просто будет updateMany с count=0)
   const updated = await prisma.product.updateMany({
     where: { name: p.name },
     data,

@@ -1,5 +1,3 @@
-// scripts/scrape-legacy.ts
-/* eslint-disable no-console */
 import fs from "node:fs/promises";
 
 const LOCAL = process.env.LOCAL_BASE || "http://localhost:3000";
@@ -44,7 +42,6 @@ async function main() {
   console.log(`[scrape] LEGACY=${LEGACY}`);
   console.log(`[scrape] OUT=${OUT}`);
 
-  // 1) получаем список id из локального API (Prisma)
   const listRes = await fetchJSON<{ data: ListItem[] }>(`${LOCAL}/api/products`);
   const ids = (listRes?.data ?? []).map(x => x.id);
   if (!ids.length) {
@@ -53,7 +50,6 @@ async function main() {
   }
   console.log(`[scrape] Всего id: ${ids.length}`);
 
-  // 2) грёбём детали с legacy по батчам
   const results: Record<number, any> = {};
   let done = 0;
 
@@ -89,7 +85,6 @@ async function main() {
   await Promise.all(workers);
   process.stdout.write("\n");
 
-  // 3) сохраняем JSON
   const sorted = Object.fromEntries(
     Object.entries(results).sort((a, b) => Number(a[0]) - Number(b[0]))
   );

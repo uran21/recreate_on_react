@@ -11,12 +11,10 @@ type ProductRow = {
   name: string;
   description: string | null;
   category: Category;
-  // support both priceCents (number) and price (string/number)
   priceCents?: number;
   price?: string | number | null;
 };
 
-// universal helper for safe error text extraction
 function getErrorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
   if (typeof err === "string") return err;
@@ -32,7 +30,6 @@ export default function AdminProductsPage() {
   const [authed, setAuthed] = useState(false);
   const [role, setRole] = useState<string | null>(null);
 
-  // auth only on client side — to avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
     try {
@@ -95,7 +92,7 @@ export default function AdminProductsPage() {
 
         setRows(mapped);
       } catch (e) {
-        // if it's an AbortError — silently exit
+
         const isAbort =
           (typeof DOMException !== "undefined" &&
             e instanceof DOMException &&
@@ -124,7 +121,7 @@ export default function AdminProductsPage() {
         method: "DELETE",
         headers: { Authorization: token ? `Bearer ${token}` : "" },
       });
-      // allow 204 without a body
+
       if (!res.ok && res.status !== 204) {
         const text = await res.text().catch(() => "");
         throw new Error(

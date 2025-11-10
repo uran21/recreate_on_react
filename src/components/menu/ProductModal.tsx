@@ -20,7 +20,7 @@ export default function ProductModal({
   productId,
   cat,
   cardImg,
-  cardListPriceCents, // ← цена, показанная на карточке (в центах)
+  cardListPriceCents, 
   onClose,
 }: {
   productId: number;
@@ -43,7 +43,6 @@ export default function ProductModal({
           cache: "no-store",
         });
 
-        // 1) Проверяем статус
         if (!res.ok) {
           const text = await res.text().catch(() => "");
           throw new Error(
@@ -53,7 +52,6 @@ export default function ProductModal({
           );
         }
 
-        // 2) Безопасный парсинг JSON
         let raw: any = null;
         try {
           raw = await res.json();
@@ -72,7 +70,6 @@ export default function ProductModal({
           );
         }
 
-        // 3) Нормализуем поля (защита от null/undefined)
         const details: ProductDetails = {
           id: Number(d.id),
           name: String(d.name ?? ""),
@@ -89,7 +86,6 @@ export default function ProductModal({
         if (abort) return;
         setData(details);
 
-        // ---- ЕДИНЫЙ ДЕФОЛТ РАЗМЕР ----
         const { all } = normalizeSizesAll(details.sizes);
         let initKey: string | undefined;
 
@@ -111,7 +107,6 @@ export default function ProductModal({
         setAddsOn(new Set());
       } catch (e) {
         console.error("[ProductModal] load error:", e);
-        // Можем показать небольшую заглушку вместо вечного «Loading…»
         if (!abort) {
           setData({
             id: productId,
@@ -192,9 +187,7 @@ export default function ProductModal({
     const cartItem = {
       productId: data.id,
       name: data.name,
-      // basePrice = что реально оплачиваем за единицу (без добавок)
       basePrice: (sizeDisc != null && authed ? sizeDisc : sizeRegC) / 100,
-      // price = «регулярная» цена ед., чтобы корректно рисовать перечёркивание
       price: sizeRegC / 100,
       discountPrice: sizeDisc != null ? sizeDisc / 100 : undefined,
       sizeKey: sizeKeyStd,

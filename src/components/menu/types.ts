@@ -4,7 +4,7 @@ export interface ProductListItem {
   id: number;
   name: string;
   description: string;
-  price: string; // как в твоём API
+  price: string;
   discountPrice?: string;
   category: Category;
 }

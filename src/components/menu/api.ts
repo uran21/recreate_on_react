@@ -1,4 +1,3 @@
-// src/components/menu/api.ts
 import type { ProductListItem, ProductListResponse, ProductDetails, ProductDetailsResponse } from './types';
 
 export async function fetchProducts(): Promise<ProductListItem[]> {

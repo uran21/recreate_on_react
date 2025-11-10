@@ -1,4 +1,3 @@
-// src/lib/auth-server.ts
 import { verifyJwt } from "@/server/jwt";
 
 export type AuthUser = { id: number; login: string; role: string };
@@ -11,7 +10,6 @@ export class AuthError extends Error {
 export function readBearer(req: Request): string | null {
   const h = req.headers.get("authorization") || "";
   if (h.startsWith("Bearer ")) return h.slice(7).trim();
-  // допускаем токен без префикса (на всякий случай)
   return h ? h.trim() : null;
 }
 

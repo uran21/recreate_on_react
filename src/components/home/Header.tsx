@@ -9,8 +9,7 @@ export default function Header() {
   const { open, cartCount, close, toggle } = useHeader();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // следим за авторизацией
-  useEffect(() => {
+    useEffect(() => {
     const checkAuth = () => setIsLoggedIn(!!localStorage.getItem("authToken"));
     checkAuth();
 
@@ -26,7 +25,6 @@ export default function Header() {
     };
   }, []);
 
-  // логика видимости корзины:
   const shouldShowCart = isLoggedIn || cartCount > 0;
 
   const CartLink = shouldShowCart ? (
@@ -103,12 +101,10 @@ export default function Header() {
             />
           </Link>
 
-          {/* Cart в мобильном меню */}
           {CartLink}
         </nav>
 
         <div className="header-actions">
-          {/* Cart на десктопе */}
           {CartLink}
 
           <Link className="menu-link" href="/menu">

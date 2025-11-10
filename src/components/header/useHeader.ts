@@ -19,17 +19,15 @@ export function useHeader() {
   const close = useCallback(() => setOpen(false), []);
   const toggle = useCallback(() => setOpen((v) => !v), []);
 
-  // block scroll when burger is open
   useEffect(() => {
     if (open) document.body.classList.add("no-scroll");
     else document.body.classList.remove("no-scroll");
     return () => document.body.classList.remove("no-scroll");
   }, [open]);
 
-  // subscribe to cart changes
   useEffect(() => {
     const update = () => setCartCount(readCartCount());
-    update(); // initial
+    update(); 
 
     const onCartUpdated = () => update();
     const onStorage = (e: StorageEvent) => {

@@ -57,7 +57,6 @@ export default function Hero() {
               onBlur={onLeave}
             >
               <span className="btn-label">Menu</span>
-              {/* чашка; CSS уже есть (btn-cup + .show) */}
               <img
                 className={`btn-cup ${showCup ? "show" : ""}`}
                 src="/assets/coffee-cup.svg"

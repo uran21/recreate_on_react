@@ -1,31 +1,25 @@
-// app/components/menu/MenuPage.tsx
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 import styles from "@/styles/MenuPage.module.css";
-import type { Category } from "./types"; // оставляем только Category
+import type { Category } from "./types"; 
 import { FALLBACKS, IMGMAP, PLACEHOLDER_IMG } from "./imgmap";
 import { isLoggedIn, toCents, fromCents } from "./vanilla-helpers";
 import ProductModal from "./ProductModal";
 
 const MOBILE_MAX = 768;
 const MOBILE_VISIBLE = 4;
-
-// Локальный тип данных для карточки меню
 type UIProduct = {
   id: number;
   name: string;
   description: string;
   category: Category;
   image?: string | null;
-
-  // Поддерживаем оба варианта цен, какие бы ни пришли из API
   price?: string | number | null;
   discountPrice?: string | number | null;
   priceCents?: number;
   discountPriceCents?: number;
 
-  // служебное поле для отрисовки
   _img?: string;
 };
 
@@ -33,9 +27,9 @@ function normalizeImgPath(src?: string | null): string | null {
   if (!src) return null;
   const s = String(src).trim();
   if (!s) return null;
-  if (/^https?:\/\//i.test(s)) return s; // абсолютные URL
-  if (s.startsWith("/")) return s; // уже абсолютный путь на сайте
-  return `/assets/menu/${s}`; // просто имя файла → в assets/menu
+  if (/^https?:\/\//i.test(s)) return s; 
+  if (s.startsWith("/")) return s; 
+  return `/assets/menu/${s}`; 
 }
 
 export default function MenuPage() {
@@ -45,8 +39,7 @@ export default function MenuPage() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
-  // читаем #hash как категорию
-  useEffect(() => {
+   useEffect(() => {
     const apply = () => {
       const hash = (window.location.hash || "").slice(1) as Category;
       if (["coffee", "tea", "dessert"].includes(hash)) setCat(hash);
@@ -56,7 +49,6 @@ export default function MenuPage() {
     return () => window.removeEventListener("hashchange", apply);
   }, []);
 
-  // загрузка списка
   useEffect(() => {
     const controller = new AbortController();
     (async () => {
@@ -92,7 +84,6 @@ export default function MenuPage() {
           category: String(p.category ?? "coffee").toLowerCase() as Category,
           image: typeof p.image === "string" ? p.image : null,
 
-          // что бы ни прислал API — сохраняем
           price: p.price ?? null,
           discountPrice: p.discountPrice ?? null,
           priceCents:
@@ -125,7 +116,6 @@ export default function MenuPage() {
     return () => controller.abort();
   }, []);
 
-  // Фильтрация по категории + выбор картинки (БД -> IMGMAP -> FALLBACKS -> PLACEHOLDER)
   const filtered = useMemo(() => {
     const list = items
       .filter((p) => p.category === cat)
@@ -156,8 +146,7 @@ export default function MenuPage() {
     });
   }, [items, cat]);
 
-  // Мобильное «показать ещё»
-  const [showAllMobile, setShowAllMobile] = useState(false);
+   const [showAllMobile, setShowAllMobile] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
     const calc = () => setIsMobile(window.innerWidth <= MOBILE_MAX);
@@ -328,8 +317,6 @@ export default function MenuPage() {
           </button>
         </div>
       </div>
-
-      {/* Модалка */}
       <div
         id="productModal"
         className={`${styles.modal} ${open ? styles["is-open"] : ""}`}

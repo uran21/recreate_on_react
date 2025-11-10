@@ -1,4 +1,3 @@
-// app/cart/page.tsx
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,8 +25,6 @@ type UserProfile = {
 
 const money = (n: number) => `$${(n || 0).toFixed(2)}`;
 const isAuthed = () => !!localStorage.getItem("authToken");
-
-/* ===== helpers ===== */
 function keyOf(it: CartItem): string {
   const addsKey = (it.adds || [])
     .map((a) => a.name?.trim().toLowerCase())
@@ -88,7 +85,6 @@ function humanPay(method?: string) {
   return method || "-";
 }
 
-/* ===== роль из JWT в localStorage (base64url decode) ===== */
 function base64UrlDecode(s: string): string {
   try {
     const pad = s.length % 4 === 2 ? "==" : s.length % 4 === 3 ? "=" : "";
@@ -119,16 +115,15 @@ export default function CartPage() {
   const [authed, setAuthed] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserProfile>({});
-  const [isAdmin, setIsAdmin] = useState(false); // ← добавили
+  const [isAdmin, setIsAdmin] = useState(false); 
   const router = useRouter();
 
-  // авторизация + профиль пользователя
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     const logged = !!token;
     setIsLoggedIn(logged);
     setAuthed(logged);
-    setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
+    setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); 
 
     async function loadProfile() {
       if (!token) return setUser({});
@@ -194,21 +189,21 @@ export default function CartPage() {
     setRaw(readCart());
     setAuthed(isAuthed());
     setUser(readUser());
-    setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
+    setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); 
 
     const onStorage = (e: StorageEvent) => {
       if (e.key === "cart" || e.key === "authToken" || e.key === "user") {
         setRaw(readCart());
         setAuthed(isAuthed());
         setUser(readUser());
-        setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
+        setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); 
       }
     };
     const onCart = () => setRaw(readCart());
     const onAuth = () => {
       setAuthed(isAuthed());
       setUser(readUser());
-      setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); // ← роль
+      setIsAdmin((getTokenRole() || "").toLowerCase() === "admin"); 
     };
     window.addEventListener("storage", onStorage);
     window.addEventListener("cart:updated", onCart);
@@ -222,7 +217,6 @@ export default function CartPage() {
     };
   }, []);
 
-  /* cart ops */
   const inc = (it: CartItem & { qty: number }) => {
     const clone = [...raw, { ...it, qty: undefined } as CartItem];
     writeCart(clone);
@@ -249,7 +243,6 @@ export default function CartPage() {
     setRaw([]);
   };
 
-  /* place order */
   const placeOrder = async () => {
     if (!isLoggedIn) return alert("Please sign in to confirm the order.");
     if (grouped.length === 0) return alert("Your cart is empty");
@@ -279,7 +272,6 @@ export default function CartPage() {
       clear();
       alert(`Thanks! Order #${json?.data?.id} placed.`);
     } catch (e) {
-      // не трогаем e.message, чтобы не ловить TS ошибки
       alert(`Failed to place order: ${String(e)}`);
     }
   };
@@ -378,7 +370,6 @@ export default function CartPage() {
         )}
       </ul>
 
-      {/* Summary */}
       <div className="cart-summary">
         <dl className="sum-list">
           <div className="row">
@@ -408,14 +399,14 @@ export default function CartPage() {
       </div>
 
       <div className="cart-actions">
-        {/* Кнопка Admin строго по роли из JWT */}
+
         {isAdmin && (
           <a className="btn-crt btn-outline" href="/admin">
             Admin
           </a>
         )}
 
-        {/* Confirm видна только для залогиненного */}
+
         {isLoggedIn && (
           <button className="btn-crt btn-outline" onClick={placeOrder}>
             Confirm
@@ -426,7 +417,6 @@ export default function CartPage() {
           Clear cart
         </button>
 
-        {/* Кнопки аутентификации */}
         {!isLoggedIn ? (
           <>
             <button

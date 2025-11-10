@@ -11,7 +11,7 @@ type Item = {
   image?: string | null;
 };
 
-const AUTO_MS = 4500; // интервал автопрокрутки
+const AUTO_MS = 4500; 
 const IMG = (i: number) => `/assets/coffee-${(i % 3) + 1}.svg`;
 
 export default function FavoritesCarousel() {
@@ -29,7 +29,6 @@ export default function FavoritesCarousel() {
   const pausedRef = useRef<boolean>(false);
   const visibleRef = useRef<boolean>(true);
 
-  // загрузка данных
   useEffect(() => {
     (async () => {
       try {
@@ -43,8 +42,7 @@ export default function FavoritesCarousel() {
     })();
   }, []);
 
-  // утилиты
-  const setActive = (i: number) => {
+   const setActive = (i: number) => {
     dotsRef.current.forEach((d, k) => d.classList.toggle('is-active', k === i));
   };
 
@@ -62,11 +60,9 @@ export default function FavoritesCarousel() {
     const bar = dotsRef.current[idxRef.current]?.querySelector<HTMLSpanElement>('.bar');
     if (!bar) return;
 
-    // плавно продолжаем анимацию на оставшееся время
     bar.style.transition = pausedRef.current ? 'none' : `transform ${remainMs}ms linear`;
     bar.style.transform = `scaleX(${ratio})`;
-    // чтобы «доехала» до 1 за оставшееся время — задаём второй кадр на следующий тик
-    if (!pausedRef.current) {
+     if (!pausedRef.current) {
       requestAnimationFrame(() => {
         bar.style.transition = `transform ${remainMs}ms linear`;
         bar.style.transform = 'scaleX(1)';
@@ -89,8 +85,7 @@ export default function FavoritesCarousel() {
     setActive(idxRef.current);
     resetBars();
     t.scrollTo({ left: idxRef.current * stepRef.current, behavior: smooth ? 'smooth' : 'auto' });
-    // перезапуск прогресса у активной точки
-    remainRef.current = AUTO_MS;
+      remainRef.current = AUTO_MS;
     startProgressTimer();
   };
 
@@ -105,8 +100,7 @@ export default function FavoritesCarousel() {
     startTsRef.current = performance.now();
     updateActiveBar(remainRef.current);
     timerRef.current = setTimeout(() => {
-      // следующий слайд
-      goTo(idxRef.current + 1);
+        goTo(idxRef.current + 1);
     }, remainRef.current);
   };
 
@@ -117,7 +111,6 @@ export default function FavoritesCarousel() {
     const elapsed = now - startTsRef.current;
     remainRef.current = Math.max(0, remainRef.current - elapsed);
     clearTimer();
-    // зафризить бар
     updateActiveBar(remainRef.current);
   };
 
@@ -127,29 +120,24 @@ export default function FavoritesCarousel() {
     startProgressTimer();
   };
 
-  // инициализация поведения после монтирования DOM
-  useEffect(() => {
+    useEffect(() => {
     if (!items?.length) return;
 
     const root = rootRef.current!;
     const track = trackRef.current!;
     stepRef.current = computeStep();
 
-    // активный индекс по текущему скроллу
-    const onScroll = () => {
+      const onScroll = () => {
       const i = Math.round(track.scrollLeft / stepRef.current);
       if (i !== idxRef.current) {
         idxRef.current = i;
         setActive(i);
-        // сбросить прогресс и таймер (ручной скролл = новый цикл)
         resetBars();
         remainRef.current = AUTO_MS;
         startProgressTimer();
       }
     };
     track.addEventListener('scroll', onScroll, { passive: true });
-
-    // пауза при hover/focus внутри карусели
     const onEnter = () => pause();
     const onLeave = () => resume();
     root.addEventListener('mouseenter', onEnter);
@@ -157,7 +145,6 @@ export default function FavoritesCarousel() {
     root.addEventListener('focusin', onEnter);
     root.addEventListener('focusout', onLeave);
 
-    // пауза, если секция вне вьюпорта
     const io = new IntersectionObserver(
       (entries) => {
         const vis = entries[0]?.isIntersecting ?? true;
@@ -169,15 +156,11 @@ export default function FavoritesCarousel() {
     );
     io.observe(root);
 
-    // ресайз/изменение шага
     const ro = new ResizeObserver(() => {
       stepRef.current = computeStep();
-      // пересчитать позицию без анимации
       track.scrollTo({ left: idxRef.current * stepRef.current, behavior: 'auto' });
     });
     ro.observe(track);
-
-    // старт
     setActive(0);
     resetBars();
     remainRef.current = AUTO_MS;
@@ -193,7 +176,6 @@ export default function FavoritesCarousel() {
       io.disconnect();
       ro.disconnect();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
   if (err) {

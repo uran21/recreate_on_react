@@ -1,4 +1,3 @@
-// app/register/RegisterClient.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,8 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 type City = { id: number; name: string };
 type Street = { id: number; name: string };
 
-const reLogin = /^[A-Za-z][A-Za-z0-9]{2,}$/; // ≥3, начинается с буквы, латиница/цифры
-const rePassword = /^(?=.*[^\w\s]).{6,}$/; // ≥6, ≥1 спецсимвол
+const reLogin = /^[A-Za-z][A-Za-z0-9]{2,}$/; 
+const rePassword = /^(?=.*[^\w\s]).{6,}$/; 
 
 type Errs = Partial<{
   login: string;
@@ -32,7 +31,7 @@ export default function RegisterClient() {
   const router = useRouter();
   const sp = useSearchParams();
 
-  // поля
+
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -41,11 +40,10 @@ export default function RegisterClient() {
   const [cityId, setCityId] = useState<number | "">("");
   const [streetId, setStreetId] = useState<number | "">("");
 
-  // списки
+ 
   const [cities, setCities] = useState<City[]>([]);
   const [streets, setStreets] = useState<Street[]>([]);
 
-  // состояния
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
   const [errs, setErrs] = useState<Errs>({});
@@ -54,8 +52,7 @@ export default function RegisterClient() {
   const markTouched = (k: keyof Errs) =>
     setTouched((t) => (t[k] ? t : { ...t, [k]: true }));
 
-  // ===== контекстная валидация (без гонок setState) =====
-  const validateField = (key: keyof Errs, ctx: Ctx = {}): string => {
+    const validateField = (key: keyof Errs, ctx: Ctx = {}): string => {
     const vLogin = ctx.login ?? login;
     const vPass = ctx.password ?? password;
     const vConf = ctx.confirm ?? confirm;
@@ -89,8 +86,7 @@ export default function RegisterClient() {
         if (vHouse === "" || typeof vHouse !== "number") {
           return "Enter a valid house number (integer ≥ 1).";
         }
-        // строго целое и ≥1
-        if (!Number.isInteger(vHouse) || vHouse < 1) {
+         if (!Number.isInteger(vHouse) || vHouse < 1) {
           return "Enter a valid house number (integer ≥ 1).";
         }
         return "";
@@ -122,14 +118,12 @@ export default function RegisterClient() {
     !validateField("street") &&
     !validateField("houseNumber");
 
-  // если уже залогинен — на /menu
-  useEffect(() => {
+   useEffect(() => {
     if (typeof window !== "undefined" && localStorage.getItem("authToken")) {
       router.replace("/menu");
     }
   }, [router]);
 
-  // города
   useEffect(() => {
     (async () => {
       const res = await fetch("/api/cities", { cache: "no-store" });
@@ -140,7 +134,6 @@ export default function RegisterClient() {
     })();
   }, []);
 
-  // улицы при выборе города
   useEffect(() => {
     (async () => {
       if (!cityId) {
@@ -158,10 +151,8 @@ export default function RegisterClient() {
     })();
     if (touched.city) revalidate(["city"], { cityId });
     if (touched.street) revalidate(["street"], { streetId });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cityId]);
 
-  // ===== onChange с передачей "следующего" значения в валидатор =====
   const onLoginChange = (val: string) => {
     setLogin(val);
     if (!touched.login) markTouched("login");
@@ -171,7 +162,6 @@ export default function RegisterClient() {
   const onPasswordChange = (val: string) => {
     setPassword(val);
     if (!touched.password) markTouched("password");
-    // валидируем и confirm против НОВОГО пароля
     revalidate(["password", "confirm"], { password: val, confirm });
   };
 
@@ -201,7 +191,6 @@ export default function RegisterClient() {
     revalidate(["houseNumber"], { houseNumber: next });
   };
 
-  // ===== submit =====
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({
@@ -212,7 +201,6 @@ export default function RegisterClient() {
       street: true,
       houseNumber: true,
     });
-    // итоговая проверка на актуальных значениях
     revalidate([
       "login",
       "password",
@@ -280,7 +268,6 @@ export default function RegisterClient() {
 
       <form onSubmit={onSubmit} noValidate>
         <div className="grid reg-grid">
-          {/* Login */}
           <div className="field col-login">
             <label className="label" htmlFor="login">
               Login
@@ -299,7 +286,6 @@ export default function RegisterClient() {
             <div className="err">{touched.login ? errs.login || "" : ""}</div>
           </div>
 
-          {/* Password */}
           <div className="field col-password">
             <label className="label" htmlFor="password">
               Password
@@ -321,7 +307,6 @@ export default function RegisterClient() {
             </div>
           </div>
 
-          {/* Confirm */}
           <div className="field col-confirm">
             <label className="label" htmlFor="confirm">
               Confirm Password
@@ -343,7 +328,6 @@ export default function RegisterClient() {
             </div>
           </div>
 
-          {/* City */}
           <div className="field col-city">
             <label className="label" htmlFor="city">
               City
@@ -367,8 +351,7 @@ export default function RegisterClient() {
             <div className="err">{touched.city ? errs.city || "" : ""}</div>
           </div>
 
-          {/* Street */}
-          <div className="field col-street">
+           <div className="field col-street">
             <label className="label" htmlFor="street">
               Street
             </label>
@@ -392,7 +375,6 @@ export default function RegisterClient() {
             <div className="err">{touched.street ? errs.street || "" : ""}</div>
           </div>
 
-          {/* House number */}
           <div className="field col-house">
             <label className="label" htmlFor="houseNumber">
               House number
@@ -415,8 +397,6 @@ export default function RegisterClient() {
               {touched.houseNumber ? errs.houseNumber || "" : ""}
             </div>
           </div>
-
-          {/* Payment */}
           <div className="field col-pay">
             <span className="label">Pay by</span>
             <div className="radio-row">
